@@ -1,7 +1,7 @@
 package io.github.dtm.labs.core.exception;
 
 /**
- * @author myth
+ * @author imythu
  */
 public class DoAndSubmitDbException extends MsgTransactionException {
     public DoAndSubmitDbException() {

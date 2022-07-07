@@ -3,7 +3,7 @@ package io.github.dtm.labs.core.mode.base;
 import lombok.Data;
 
 /**
- * @author myth
+ * @author imythu
  */
 @Data
 public class BranchIDGen {

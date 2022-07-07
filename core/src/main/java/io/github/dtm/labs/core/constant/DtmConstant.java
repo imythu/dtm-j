@@ -1,7 +1,7 @@
 package io.github.dtm.labs.core.constant;
 
 /**
- * @author myth
+ * @author imythu
  */
 public interface DtmConstant {
     /**

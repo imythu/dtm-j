@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author myth
+ * @author imythu
  */
 public class DtmProperties {
     private List<String> dtmServer = new ArrayList<>(0);

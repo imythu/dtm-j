@@ -1,7 +1,7 @@
 package io.github.dtm.labs.core.compatible.golang.error;
 
 /**
- * @author myth
+ * @author imythu
  */
 public class Errors {
     private Errors() {}

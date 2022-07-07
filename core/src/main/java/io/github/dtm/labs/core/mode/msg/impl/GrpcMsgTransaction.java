@@ -8,15 +8,10 @@ import io.github.dtm.labs.core.exception.PrepareException;
 import io.github.dtm.labs.core.exception.SubmitException;
 import io.github.dtm.labs.core.mode.msg.MsgTransaction;
 import io.github.dtm.labs.core.mode.msg.entity.Msg;
-import org.hibernate.Session;
-
-import javax.naming.OperationNotSupportedException;
-import java.sql.Connection;
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 /**
- * @author myth
+ * @author imythu
  */
 public class GrpcMsgTransaction implements MsgTransaction<Msg> {
     @Override
@@ -30,24 +25,16 @@ public class GrpcMsgTransaction implements MsgTransaction<Msg> {
     }
 
     @Override
-    public void prepare(String queryPrepared) throws PrepareException {
-
-    }
+    public void prepare(String queryPrepared) throws PrepareException {}
 
     @Override
-    public void submit() throws SubmitException {
-
-    }
+    public void submit() throws SubmitException {}
 
     @Override
-    public void doAndSubmitDb(String queryPrepared, Session session, BarrierBusiFunc barrierBusiFunc) throws DoAndSubmitDbException {
-
-    }
+    public void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc) throws DoAndSubmitDbException {}
 
     @Override
-    public void doAndSubmit(String queryPrepared, Consumer<BranchBarrier> busiCall) throws DoAndSubmitException {
-
-    }
+    public void doAndSubmit(String queryPrepared, Consumer<BranchBarrier> busiCall) throws DoAndSubmitException {}
 
     @Override
     public void buildCustomOptions() {

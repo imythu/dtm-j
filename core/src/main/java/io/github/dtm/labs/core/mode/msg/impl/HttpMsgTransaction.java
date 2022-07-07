@@ -6,6 +6,7 @@ import io.github.dtm.labs.core.constant.DtmMethod;
 import io.github.dtm.labs.core.exception.*;
 import io.github.dtm.labs.core.mode.msg.MsgTransaction;
 import io.github.dtm.labs.core.mode.msg.entity.Msg;
+import io.github.dtm.labs.core.utils.DbUtils;
 import io.github.dtm.labs.core.utils.JsonUtils;
 import io.github.dtm.labs.core.utils.TransBaseUtils;
 import jakarta.ws.rs.HttpMethod;
@@ -18,7 +19,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * @author myth
+ * @author imythu
  */
 public class HttpMsgTransaction implements MsgTransaction<Msg> {
     private final Msg msg;
@@ -54,12 +55,12 @@ public class HttpMsgTransaction implements MsgTransaction<Msg> {
     }
 
     @Override
-    public void doAndSubmitDb(String queryPrepared, Session session, BarrierBusiFunc barrierBusiFunc) throws DoAndSubmitDbException {
+    public void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc) throws DoAndSubmitDbException {
         doAndSubmit(queryPrepared, new Consumer<BranchBarrier>() {
             @Override
             public void accept(BranchBarrier branchBarrier) {
                 try {
-                    branchBarrier.callWithDb(session, barrierBusiFunc);
+                    branchBarrier.callWithDb(DbUtils.getConnection(), barrierBusiFunc);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

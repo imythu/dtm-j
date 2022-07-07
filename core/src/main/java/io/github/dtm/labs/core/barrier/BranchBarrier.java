@@ -2,7 +2,7 @@ package io.github.dtm.labs.core.barrier;
 
 import com.google.common.base.Strings;
 import io.github.dtm.labs.core.constant.DtmConstant;
-import io.github.dtm.labs.core.domain.BarrierDO;
+import java.sql.PreparedStatement;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -16,11 +16,9 @@ import org.hibernate.service.spi.ServiceRegistryImplementor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * @author myth
+ * @author imythu
  */
 public class BranchBarrier {
     private String transType;
@@ -124,44 +122,38 @@ public class BranchBarrier {
     }
 
     /**
-     * the same as {@link #call(Session, BarrierBusiFunc)}
+     * the same as {@link #call(Connection, BarrierBusiFunc)}
      */
-    public void callWithDb(Session session, BarrierBusiFunc barrierBusiFunc) throws SQLException {
-        Transaction transaction = session.beginTransaction();
-        call(session, barrierBusiFunc);
+    public void callWithDb(Connection connection, BarrierBusiFunc barrierBusiFunc) throws SQLException {
+                call(connection, barrierBusiFunc);
 
 
     }
 
     /**
      * see detail description in <a href="https://en.dtm.pub/practice/barrier.html">https://en.dtm.pub/practice/barrier.html</a>
-     * @param session local transaction connection
+     * @param connection local transaction connection
      * @param barrierBusiFunc busi func
      * @throws SQLException
      */
-    public void call(Session session, BarrierBusiFunc barrierBusiFunc) throws SQLException {
-        Transaction transaction = session.beginTransaction();
-        try {
+    public void call(Connection connection, BarrierBusiFunc barrierBusiFunc) throws SQLException {
+
+        try (connection) {
             barrierID++;
             String bid = String.format("%02d", barrierID);
-            String originOp;
+            String originOp = null;
             if (DtmConstant.OP_CANCEL.equals(op)) {
                 originOp = DtmConstant.OP_TRY;
             } else if (DtmConstant.OP_COMPENSATE.equals(op)) {
                 originOp = DtmConstant.OP_ACTION;
             }
 
-
-            int originAffected = session.persist(new BarrierDO().setTransType(transType)
-                    .setGid(gid).setBranchId(branchID).setOp(originOp).setBarrierId(bid).setOp());
-            transaction.commit();
+            connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement();
+            statement.executeUpdate();
+            int originAffected;
         } catch (Exception e) {
-            transaction.rollback();
         }
 
-    }
-
-    public int insertBarrier(Transaction transaction, BarrierDO barrierDO) {
-        transaction.
     }
 }

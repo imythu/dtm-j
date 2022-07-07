@@ -3,7 +3,7 @@ package io.github.dtm.labs.core.constant;
 /**
  * for jsonrpc: method name
  * for http: api pathtop
- * @author myth
+ * @author imythu
  */
 public interface DtmMethod {
     String NEW_GID = "newGid";

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * json rpc 2.0 protocol request
- * @author myth
+ * @author imythu
  */
 public class Request<T> implements Serializable {
 

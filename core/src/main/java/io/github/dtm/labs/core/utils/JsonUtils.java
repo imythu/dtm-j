@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * @author myth
+ * @author imythu
  */
 public class JsonUtils {
     private static final Gson GSON;

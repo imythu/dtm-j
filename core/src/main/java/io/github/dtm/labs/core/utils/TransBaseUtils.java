@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author myth
+ * @author imythu
  */
 public class TransBaseUtils {
 

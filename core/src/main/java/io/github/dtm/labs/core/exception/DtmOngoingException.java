@@ -2,7 +2,7 @@ package io.github.dtm.labs.core.exception;
 
 /**
  * error for returned {@link io.github.dtm.labs.core.constant.DtmConstant#RESULT_ONGOING}
- * @author myth
+ * @author imythu
  */
 public class DtmOngoingException extends RuntimeException {
     public DtmOngoingException() {

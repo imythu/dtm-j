@@ -7,11 +7,6 @@ import io.github.dtm.labs.core.exception.DoAndSubmitException;
 import io.github.dtm.labs.core.exception.PrepareException;
 import io.github.dtm.labs.core.exception.SubmitException;
 import io.github.dtm.labs.core.mode.msg.entity.Msg;
-import io.github.dtm.labs.core.utils.JsonUtils;
-import org.hibernate.Session;
-
-import java.sql.Connection;
-import java.util.Collections;
 import java.util.function.Consumer;
 
 /**
@@ -53,11 +48,10 @@ public interface MsgTransaction<T extends Msg> {
     /**
      * short method for Do on db type. please see {@link #doAndSubmit}
      * @param queryPrepared
-     * @param session
      * @param barrierBusiFunc
      * @throws DoAndSubmitDbException
      */
-    void doAndSubmitDb(String queryPrepared, Session session, BarrierBusiFunc barrierBusiFunc) throws DoAndSubmitDbException;
+    void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc) throws DoAndSubmitDbException;
 
     /**
      * one method for the entire prepare->busi->submit
