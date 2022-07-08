@@ -3,7 +3,7 @@ package io.github.dtm.labs.core.constant;
 /**
  * @author imythu
  */
-public interface TransactionType {
+public interface GlobalTransactionType {
     String XA = "xa";
     String MSG = "msg";
     String TCC = "tcc";

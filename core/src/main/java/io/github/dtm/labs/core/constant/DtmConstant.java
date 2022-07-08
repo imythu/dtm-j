@@ -48,15 +48,6 @@ public interface DtmConstant {
      * OpRollback branch type for XA
      */
     String OP_ROLLBACK = "rollback";
-
-    /**
-     * DBTypeMysql const for driver mysql
-     */
-    String DB_TYPE_MYSQL = "mysql";
-    /**
-     * DBTypePostgres const for driver postgres
-     */
-    String DB_TYPE_POSTGRES = "postgres";
     /**
      * DBTypeRedis const for driver redis
      */

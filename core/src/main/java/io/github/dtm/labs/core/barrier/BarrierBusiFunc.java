@@ -1,8 +1,9 @@
 package io.github.dtm.labs.core.barrier;
 
+import io.github.dtm.labs.core.compatible.golang.error.Error;
 import io.github.dtm.labs.core.exception.BarrierException;
+import io.github.dtm.labs.core.tx.Transaction;
 import java.sql.Connection;
-import org.hibernate.Transaction;
 
 /**
  * type for busi func
@@ -12,8 +13,8 @@ import org.hibernate.Transaction;
 public interface BarrierBusiFunc {
     /**
      * type for busi func
-     * @param connection for transactional operations
+     * @param transaction for transactional operations
      * @throws BarrierException BarrierException
      */
-    void doBusi(Connection connection) throws BarrierException;
+    Error doBusi(Transaction transaction) throws BarrierException;
 }

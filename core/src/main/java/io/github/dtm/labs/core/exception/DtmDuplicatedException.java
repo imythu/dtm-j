@@ -1,7 +1,9 @@
 package io.github.dtm.labs.core.exception;
 
+import io.github.dtm.labs.core.constant.GlobalTransactionType;
+
 /**
- * error of DUPLICATED for only {@link io.github.dtm.labs.core.constant.TransactionType#MSG}
+ * error of DUPLICATED for only {@link GlobalTransactionType#MSG}
  * if QueryPrepared executed before call. then DoAndSubmit return this error
  */
 public class DtmDuplicatedException extends RuntimeException {

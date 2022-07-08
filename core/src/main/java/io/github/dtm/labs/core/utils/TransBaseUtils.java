@@ -2,7 +2,7 @@ package io.github.dtm.labs.core.utils;
 
 import com.google.common.base.Strings;
 import io.github.dtm.labs.core.constant.DtmConstant;
-import io.github.dtm.labs.core.constant.TransactionType;
+import io.github.dtm.labs.core.constant.GlobalTransactionType;
 import io.github.dtm.labs.core.exception.DtmFailureException;
 import io.github.dtm.labs.core.exception.DtmOngoingException;
 import io.github.dtm.labs.core.exception.PrepareException;
@@ -84,7 +84,7 @@ public class TransBaseUtils {
         query.put("branch_id", t.getBranchIDGen().getBranchID());
         query.put("trans_type", t.getTransType());
         query.put("op", t.getOp());
-        if (TransactionType.XA.equals(t.getTransType())) {
+        if (GlobalTransactionType.XA.equals(t.getTransType())) {
             query.put("phase2_url", url);
         }
         HttpResponse<String> response = Unirest.request(method, url)

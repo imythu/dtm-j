@@ -56,14 +56,12 @@ public class HttpMsgTransaction implements MsgTransaction<Msg> {
 
     @Override
     public void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc) throws DoAndSubmitDbException {
-        doAndSubmit(queryPrepared, new Consumer<BranchBarrier>() {
-            @Override
-            public void accept(BranchBarrier branchBarrier) {
-                try {
-                    branchBarrier.callWithDb(DbUtils.getConnection(), barrierBusiFunc);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
+        doAndSubmit(queryPrepared, branchBarrier -> {
+            try {
+                DbUtils.getConnection().getMetaData().getDatabaseProductName();
+                branchBarrier.callWithDb(DbUtils.getConnection(), barrierBusiFunc);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         });
     }

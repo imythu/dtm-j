@@ -1,12 +1,16 @@
 package io.github.dtm.labs.core.barrier;
 
 import io.github.dtm.labs.core.domain.BarrierDO;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * db specific operations
  * @author imythu
  */
 public interface DbSpecial {
-    String getInsertIgnoreSql(BarrierDO barrierDO);
-    String getXaSQL(String command, String xid);
+    int executeInsertIgnoreSql(Connection connection, BarrierDO barrierDO) throws SQLException;
+    String getXaSql(String command, String xid);
+
+    String dbName();
 }
