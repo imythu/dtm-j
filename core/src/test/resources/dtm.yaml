@@ -1,0 +1,6 @@
+dtmServer:
+  - docker.host.internal:35679
+db:
+  url: mysql:jdbc://test.inusha.cn:3306/dtm_barrier
+  username: root
+  password: amber..1234

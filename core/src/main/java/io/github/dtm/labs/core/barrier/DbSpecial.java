@@ -10,6 +10,7 @@ import java.sql.SQLException;
  */
 public interface DbSpecial {
     int executeInsertIgnoreSql(Connection connection, BarrierDO barrierDO) throws SQLException;
+
     String getXaSql(String command, String xid);
 
     String dbName();

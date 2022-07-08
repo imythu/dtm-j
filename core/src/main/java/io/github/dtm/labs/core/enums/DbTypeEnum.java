@@ -1,4 +1,5 @@
-package io.github.dtm.labs.core.enums;/**
+package io.github.dtm.labs.core.enums;
+/**
  * @author imythu
- */public enum DbTypeEnum {
-}
+ */
+public enum DbTypeEnum {}

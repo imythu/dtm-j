@@ -3,7 +3,6 @@ package io.github.dtm.labs.core.barrier;
 import io.github.dtm.labs.core.compatible.golang.error.Error;
 import io.github.dtm.labs.core.exception.BarrierException;
 import io.github.dtm.labs.core.tx.Transaction;
-import java.sql.Connection;
 
 /**
  * type for busi func

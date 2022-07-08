@@ -11,24 +11,23 @@ import io.github.dtm.labs.core.mode.base.TransBase;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonObjectMapper;
-import kong.unirest.Unirest;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonObjectMapper;
+import kong.unirest.Unirest;
 
 /**
  * @author imythu
  */
 public class TransBaseUtils {
 
-    private TransBaseUtils() {
-    }
+    private TransBaseUtils() {}
 
     static {
-        Unirest.config().setObjectMapper(new JsonObjectMapper())
+        Unirest.config()
+                .setObjectMapper(new JsonObjectMapper())
                 .setDefaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
     }
 
@@ -43,8 +42,7 @@ public class TransBaseUtils {
             if (DtmConstant.JRPC.equals(t.getProtocol())) {
                 HttpResponse<String> response = Unirest.post(t.getDtm())
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .body(JsonUtils.toJson(Request
-                                .<Object>builder()
+                        .body(JsonUtils.toJson(Request.<Object>builder()
                                 .setId("no-use")
                                 .setMethod(methodOrPath)
                                 .setParams(body)
@@ -52,8 +50,7 @@ public class TransBaseUtils {
                         .asString();
                 String jsonStr = response.getBody();
                 Map<String, Object> result = JsonUtils.toObj(jsonStr);
-                if (response.getStatus() != Response.Status.OK.getStatusCode()
-                        || result.get("error") != null) {
+                if (response.getStatus() != Response.Status.OK.getStatusCode() || result.get("error") != null) {
                     throw new PrepareException(jsonStr);
                 }
                 return;
@@ -74,7 +71,8 @@ public class TransBaseUtils {
     /**
      * request branch result
      */
-    public static HttpResponse<String> transRequestBranch(TransBase t, String method, Object body, String branchId, String op, String url) {
+    public static HttpResponse<String> transRequestBranch(
+            TransBase t, String method, Object body, String branchId, String op, String url) {
         if (Strings.isNullOrEmpty(url)) {
             throw new IllegalArgumentException("url cannot is null or empty");
         }

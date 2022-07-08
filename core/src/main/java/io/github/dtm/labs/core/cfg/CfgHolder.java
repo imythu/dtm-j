@@ -27,7 +27,8 @@ public class CfgHolder {
         if (dtmProperties == null) {
             synchronized (CfgHolder.class) {
                 if (dtmProperties == null) {
-                    Optional<CfgReader> first = ServiceLoader.load(CfgReader.class).findFirst();
+                    Optional<CfgReader> first =
+                            ServiceLoader.load(CfgReader.class).findFirst();
                     if (first.isPresent()) {
                         CfgReader cfgReader = first.get();
                         logger.info("Use CfgReader: {}.", cfgReader.getClass().getName());

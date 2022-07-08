@@ -10,8 +10,6 @@ import io.github.dtm.labs.core.tx.Transaction;
 import io.github.dtm.labs.core.utils.DbUtils;
 import io.github.dtm.labs.core.utils.ExceptionUtils;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,19 +150,18 @@ public class BranchBarrier {
             currentAffected = 0;
         }
         if (rerr == null) {
-            rerr =barrierBusiFunc.doBusi(new Transaction(connection));
+            rerr = barrierBusiFunc.doBusi(new Transaction(connection));
         }
         return rerr;
     }
 
     @Override
     public String toString() {
-        return "BranchBarrier{" +
-                "transType='" + transType + '\'' +
-                ", gid='" + gid + '\'' +
-                ", branchID='" + branchID + '\'' +
-                ", op='" + op + '\'' +
-                ", barrierID=" + barrierID +
-                '}';
+        return "BranchBarrier{" + "transType='"
+                + transType + '\'' + ", gid='"
+                + gid + '\'' + ", branchID='"
+                + branchID + '\'' + ", op='"
+                + op + '\'' + ", barrierID="
+                + barrierID + '}';
     }
 }

@@ -14,12 +14,10 @@ public class JsonUtils {
         GSON = new GsonBuilder().create();
     }
 
-    private JsonUtils() {
-    }
+    private JsonUtils() {}
 
     public static <T> T toObj(String jsonStr) {
-        return GSON.fromJson(jsonStr, new TypeToken<T>() {
-        }.getType());
+        return GSON.fromJson(jsonStr, new TypeToken<T>() {}.getType());
     }
 
     public static <T> String toJson(T obj) {

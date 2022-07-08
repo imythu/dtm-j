@@ -21,7 +21,8 @@ public class DtmOngoingException extends RuntimeException {
         super(cause);
     }
 
-    protected DtmOngoingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected DtmOngoingException(
+            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

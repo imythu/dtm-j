@@ -30,9 +30,6 @@ public class DtmProperties {
 
     @Override
     public String toString() {
-        return "DtmProperties{" +
-                "dtmServer=" + dtmServer +
-                ", db=" + db +
-                '}';
+        return "DtmProperties{" + "dtmServer=" + dtmServer + ", db=" + db + '}';
     }
 }

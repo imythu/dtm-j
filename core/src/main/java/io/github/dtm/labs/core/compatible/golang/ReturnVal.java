@@ -34,9 +34,6 @@ public class ReturnVal<T> {
 
     @Override
     public String toString() {
-        return "ReturnVal{" +
-                "value=" + value +
-                ", err=" + err +
-                '}';
+        return "ReturnVal{" + "value=" + value + ", err=" + err + '}';
     }
 }

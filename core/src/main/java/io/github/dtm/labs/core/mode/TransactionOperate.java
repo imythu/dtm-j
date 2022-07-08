@@ -14,7 +14,6 @@ public class TransactionOperate {
         this.connection.setAutoCommit(false);
     }
 
-
     public void commit() throws SQLException {
         connection.commit();
     }

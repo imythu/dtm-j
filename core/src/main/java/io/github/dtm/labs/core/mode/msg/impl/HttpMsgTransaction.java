@@ -3,16 +3,17 @@ package io.github.dtm.labs.core.mode.msg.impl;
 import io.github.dtm.labs.core.barrier.BarrierBusiFunc;
 import io.github.dtm.labs.core.barrier.BranchBarrier;
 import io.github.dtm.labs.core.constant.DtmMethod;
-import io.github.dtm.labs.core.exception.*;
+import io.github.dtm.labs.core.exception.DoAndSubmitDbException;
+import io.github.dtm.labs.core.exception.DoAndSubmitException;
+import io.github.dtm.labs.core.exception.DtmFailureException;
+import io.github.dtm.labs.core.exception.PrepareException;
+import io.github.dtm.labs.core.exception.SubmitException;
 import io.github.dtm.labs.core.mode.msg.MsgTransaction;
 import io.github.dtm.labs.core.mode.msg.entity.Msg;
 import io.github.dtm.labs.core.utils.DbUtils;
 import io.github.dtm.labs.core.utils.JsonUtils;
 import io.github.dtm.labs.core.utils.TransBaseUtils;
 import jakarta.ws.rs.HttpMethod;
-import org.hibernate.Session;
-
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Objects;
@@ -69,11 +70,13 @@ public class HttpMsgTransaction implements MsgTransaction<Msg> {
     @Override
     public void doAndSubmit(String queryPrepared, Consumer<BranchBarrier> busiCall) throws DoAndSubmitException {
         try {
-            BranchBarrier branchBarrier = BranchBarrier.from(msg.getTransType(), msg.getGid(), msg.getBranchIDGen().getBranchID(), msg.getOp());
+            BranchBarrier branchBarrier = BranchBarrier.from(
+                    msg.getTransType(), msg.getGid(), msg.getBranchIDGen().getBranchID(), msg.getOp());
             prepare(queryPrepared);
             Exception busiEx;
             Exception transRequestBranchEx = null;
-            TransBaseUtils.transRequestBranch(msg, HttpMethod.GET, null, msg.getBranchIDGen().getBranchID(), msg.getOp(), queryPrepared);
+            TransBaseUtils.transRequestBranch(
+                    msg, HttpMethod.GET, null, msg.getBranchIDGen().getBranchID(), msg.getOp(), queryPrepared);
             try {
                 busiCall.accept(branchBarrier);
                 submit();
@@ -81,12 +84,18 @@ public class HttpMsgTransaction implements MsgTransaction<Msg> {
                 busiEx = e;
                 if (!(e instanceof DtmFailureException)) {
                     try {
-                        TransBaseUtils.transRequestBranch(msg, HttpMethod.GET, null, msg.getBranchIDGen().getBranchID(), msg.getOp(), queryPrepared);
+                        TransBaseUtils.transRequestBranch(
+                                msg,
+                                HttpMethod.GET,
+                                null,
+                                msg.getBranchIDGen().getBranchID(),
+                                msg.getOp(),
+                                queryPrepared);
                     } catch (Exception branchEx) {
                         transRequestBranchEx = branchEx;
                     }
                 }
-                if (busiEx instanceof DtmFailureException || transRequestBranchEx instanceof DtmFailureException){
+                if (busiEx instanceof DtmFailureException || transRequestBranchEx instanceof DtmFailureException) {
                     TransBaseUtils.transCallDtm(msg, msg, DtmMethod.ABORT);
                 } else {
                     throw e;
@@ -109,5 +118,4 @@ public class HttpMsgTransaction implements MsgTransaction<Msg> {
     public Msg get() {
         return null;
     }
-
 }

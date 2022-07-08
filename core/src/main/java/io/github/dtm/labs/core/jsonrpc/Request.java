@@ -27,12 +27,11 @@ public class Request<T> implements Serializable {
 
     @Override
     public String toString() {
-        return "Request{" +
-                "jsonrpc='" + jsonrpc + '\'' +
-                ", method='" + method + '\'' +
-                ", id='" + id + '\'' +
-                ", params=" + params +
-                '}';
+        return "Request{" + "jsonrpc='"
+                + jsonrpc + '\'' + ", method='"
+                + method + '\'' + ", id='"
+                + id + '\'' + ", params="
+                + params + '}';
     }
 
     public static class Builder<T> {
@@ -40,7 +39,7 @@ public class Request<T> implements Serializable {
         private String id;
         private T params;
 
-        private Builder(){}
+        private Builder() {}
 
         public Builder<T> setMethod(String method) {
             this.method = method;
@@ -63,11 +62,7 @@ public class Request<T> implements Serializable {
 
         @Override
         public String toString() {
-            return "Builder{" +
-                    "method='" + method + '\'' +
-                    ", id='" + id + '\'' +
-                    ", params=" + params +
-                    '}';
+            return "Builder{" + "method='" + method + '\'' + ", id='" + id + '\'' + ", params=" + params + '}';
         }
     }
 }

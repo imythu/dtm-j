@@ -1,48 +1,20 @@
 package io.github.dtm.labs.core.domain;
 
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
  * @author imythu
  */
-@Entity
-@Table(name = "barrier")
 public class BarrierDO {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    @Column(name = "id")
     private long id;
-    @Basic
-    @Column(name = "trans_type")
     private String transType;
-    @Basic
-    @Column(name = "gid")
     private String gid;
-    @Basic
-    @Column(name = "branch_id")
     private String branchId;
-    @Basic
-    @Column(name = "op")
     private String op;
-    @Basic
-    @Column(name = "barrier_id")
     private String barrierId;
-    @Basic
-    @Column(name = "reason")
     private String reason;
-    @Basic
-    @Column(name = "create_time")
     private Timestamp createTime;
-    @Basic
-    @Column(name = "update_time")
     private Timestamp updateTime;
 
     public long getId() {
@@ -128,17 +100,16 @@ public class BarrierDO {
 
     @Override
     public String toString() {
-        return "BarrierDO{" +
-                "id=" + id +
-                ", transType='" + transType + '\'' +
-                ", gid='" + gid + '\'' +
-                ", branchId='" + branchId + '\'' +
-                ", op='" + op + '\'' +
-                ", barrierId='" + barrierId + '\'' +
-                ", reason='" + reason + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                '}';
+        return "BarrierDO{" + "id="
+                + id + ", transType='"
+                + transType + '\'' + ", gid='"
+                + gid + '\'' + ", branchId='"
+                + branchId + '\'' + ", op='"
+                + op + '\'' + ", barrierId='"
+                + barrierId + '\'' + ", reason='"
+                + reason + '\'' + ", createTime="
+                + createTime + ", updateTime="
+                + updateTime + '}';
     }
 
     @Override

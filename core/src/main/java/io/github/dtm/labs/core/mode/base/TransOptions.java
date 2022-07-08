@@ -1,9 +1,8 @@
 package io.github.dtm.labs.core.mode.base;
 
-import lombok.Data;
-
 import java.util.List;
 import java.util.Map;
+import lombok.Data;
 
 /**
  * @author imythu

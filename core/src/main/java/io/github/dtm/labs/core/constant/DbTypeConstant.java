@@ -16,5 +16,4 @@ public interface DbTypeConstant {
      * @see PgDatabaseMetaData#getDatabaseProductName()
      */
     String PostgreSQL = "PostgreSQL";
-
 }

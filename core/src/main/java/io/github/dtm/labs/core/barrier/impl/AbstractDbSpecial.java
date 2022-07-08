@@ -1,7 +1,6 @@
 package io.github.dtm.labs.core.barrier.impl;
 
 import io.github.dtm.labs.core.barrier.DbSpecial;
-import io.github.dtm.labs.core.utils.DbUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

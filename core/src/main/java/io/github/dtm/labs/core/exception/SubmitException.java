@@ -1,6 +1,6 @@
 package io.github.dtm.labs.core.exception;
 
-public class SubmitException extends MsgTransactionException{
+public class SubmitException extends MsgTransactionException {
     public SubmitException() {
         super();
     }

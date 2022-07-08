@@ -46,10 +46,9 @@ public class DbProperties {
 
     @Override
     public String toString() {
-        return "DbProperties{" +
-                "url='" + url + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        return "DbProperties{" + "url='"
+                + url + '\'' + ", username='"
+                + username + '\'' + ", password='"
+                + password + '\'' + '}';
     }
 }

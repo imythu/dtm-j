@@ -20,7 +20,8 @@ public class DoAndSubmitException extends MsgTransactionException {
         super(cause);
     }
 
-    protected DoAndSubmitException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected DoAndSubmitException(
+            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

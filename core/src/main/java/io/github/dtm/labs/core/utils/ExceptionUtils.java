@@ -8,10 +8,10 @@ import io.github.dtm.labs.core.compatible.golang.error.Errors;
  * @author zhuhf
  */
 public class ExceptionUtils {
-    private ExceptionUtils(){}
+    private ExceptionUtils() {}
 
     public static <T> ReturnVal<T> execute(Executor<T> executor) {
-        try{
+        try {
             T t = executor.execute();
             return new ReturnVal<>(t, null);
         } catch (Exception e) {
@@ -20,7 +20,7 @@ public class ExceptionUtils {
     }
 
     public static Error execute(EmptyReturnValExecutor executor) {
-        try{
+        try {
             executor.execute();
             return null;
         } catch (Exception e) {
@@ -35,5 +35,4 @@ public class ExceptionUtils {
     public static interface EmptyReturnValExecutor {
         void execute() throws Exception;
     }
-
 }
