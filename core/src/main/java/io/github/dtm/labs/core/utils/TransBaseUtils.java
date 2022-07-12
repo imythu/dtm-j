@@ -3,20 +3,21 @@ package io.github.dtm.labs.core.utils;
 import com.google.common.base.Strings;
 import io.github.dtm.labs.core.constant.DtmConstant;
 import io.github.dtm.labs.core.constant.GlobalTransactionType;
+import io.github.dtm.labs.core.dtm.utils.HttpClients;
 import io.github.dtm.labs.core.exception.DtmFailureException;
 import io.github.dtm.labs.core.exception.DtmOngoingException;
 import io.github.dtm.labs.core.exception.PrepareException;
 import io.github.dtm.labs.core.jsonrpc.JsonrpcRequest;
 import io.github.dtm.labs.core.mode.base.TransBase;
+import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonObjectMapper;
-import kong.unirest.Unirest;
 
 /**
  * @author imythu
@@ -25,41 +26,24 @@ public class TransBaseUtils {
 
     private TransBaseUtils() {}
 
-    static {
-        Unirest.config()
-                .setObjectMapper(new JsonObjectMapper())
-                .setDefaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-    }
-
     /**
      * call dtm
      */
     public static void transCallDtm(TransBase t, Object body, String methodOrPath) {
         try {
-            if (t.getRequestTimeout() != 0) {
-                Unirest.config().connectTimeout((int) TimeUnit.SECONDS.toMillis(t.getRequestTimeout()));
-            }
             if (DtmConstant.JRPC.equals(t.getProtocol())) {
-                HttpResponse<String> response = Unirest.post(t.getDtm())
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .body(JsonUtils.toJson(JsonrpcRequest.<Object>builder()
-                                .setId("no-use")
-                                .setMethod(methodOrPath)
-                                .setParams(body)
-                                .build()))
-                        .asString();
-                String jsonStr = response.getBody();
+                HttpResponse<String> response = HttpClients.getResponse(t.getDtm(), HttpMethod.POST, body);
+                String jsonStr = response.body();
                 Map<String, Object> result = JsonUtils.toObj(jsonStr);
-                if (response.getStatus() != Response.Status.OK.getStatusCode() || result.get("error") != null) {
+                if (response.statusCode() != Response.Status.OK.getStatusCode() || result.get("error") != null) {
                     throw new PrepareException(jsonStr);
                 }
                 return;
             }
-            HttpResponse<String> response = Unirest.post(String.format("%s/%s", t.getDtm(), methodOrPath))
-                    .body(body)
-                    .asString();
-            String bodyStr = response.getBody();
-            if (response.getStatus() != Response.Status.OK.getStatusCode()
+            HttpResponse<String> response =
+                    HttpClients.getResponse(String.format("%s/%s", t.getDtm(), methodOrPath), HttpMethod.POST, body);
+            String bodyStr = response.body();
+            if (response.statusCode() != Response.Status.OK.getStatusCode()
                     || bodyStr.contains(DtmConstant.RESULT_FAILURE)) {
                 throw new PrepareException(bodyStr);
             }
@@ -85,18 +69,14 @@ public class TransBaseUtils {
         if (GlobalTransactionType.XA.equals(t.getTransType())) {
             query.put("phase2_url", url);
         }
-        HttpResponse<String> response = Unirest.request(method, url)
-                .body(body)
-                .queryString(query)
-                .headers(t.getBranchHeaders())
-                .asString();
+        HttpResponse<String> response = HttpClients.getResponse(url, method, body);
         transformAndThrowException(response);
         return response;
     }
 
     private static void transformAndThrowException(HttpResponse<String> response) {
-        int status = response.getStatus();
-        String str = response.getBody();
+        int status = response.statusCode();
+        String str = response.body();
         if (status == DtmConstant.HTTP_STATUS_TOO_EARLY || str.contains(DtmConstant.RESULT_ONGOING)) {
             throw new DtmOngoingException(String.format("%s. %s", str, DtmConstant.RESULT_ONGOING));
         } else if (Response.Status.CONFLICT.getStatusCode() == status || str.contains(DtmConstant.RESULT_FAILURE)) {

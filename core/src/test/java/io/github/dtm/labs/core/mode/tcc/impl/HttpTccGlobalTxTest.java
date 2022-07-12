@@ -18,11 +18,9 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutionException;
-import kong.unirest.HttpMethod;
+import java.util.concurrent.*;
+
+import jakarta.ws.rs.HttpMethod;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,21 +38,20 @@ class HttpTccGlobalTxTest {
     private static Gson gson = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
+    static {
+        listening();
+    }
 
     private static ConcurrentMap<String, String> result = new ConcurrentHashMap<>(2);
 
     @Test
     public void testCommitTransactionNormally() {
-        listening();
         assertEquals(confirmSuccess, test(true, new TestData("1"), new HttpTccGlobalTx()));
-        httpServer.stop(5);
     }
 
     @Test
     public void testRollbackTransaction() {
-        listening();
         assertEquals(cancelSuccess, test(false, new TestData("2"), new HttpTccGlobalTx()));
-        httpServer.stop(5);
     }
 
     static String test(boolean submit, TestData testData, TccGlobalTx tx) {
@@ -63,7 +60,7 @@ class HttpTccGlobalTxTest {
         byte[] body = bodyStr.getBytes(StandardCharsets.UTF_8);
         boolean tryAndRegistryBranchTx = tx.tryAndRegistryBranchTx(new BusinessService()
                 .setTryRequest(
-                        HttpRequest.build(apiPrefix + "/try", HttpMethod.POST.name(), Collections.emptyMap(), body))
+                        HttpRequest.build(apiPrefix + "/try", HttpMethod.POST, Collections.emptyMap(), body))
                 .setCancelRequest(apiPrefix + "/cancel")
                 .setConfirmRequest(apiPrefix + "/confirm")
                 .setConfirmAndCancelRequestData(bodyStr));
@@ -90,7 +87,7 @@ class HttpTccGlobalTxTest {
         }
     }
 
-    static void listening() {
+    private static void listening() {
         try {
             httpServer = HttpServer.create(new InetSocketAddress(port), 0);
             httpServer.createContext("/try", new HttpHandler() {

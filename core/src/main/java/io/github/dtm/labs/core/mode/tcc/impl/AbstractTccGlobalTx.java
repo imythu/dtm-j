@@ -1,24 +1,20 @@
 package io.github.dtm.labs.core.mode.tcc.impl;
 
-import io.github.dtm.labs.core.constant.DtmConstant;
-import io.github.dtm.labs.core.constant.HttpApis;
 import io.github.dtm.labs.core.dtm.req.AbortRequest;
 import io.github.dtm.labs.core.dtm.req.PrepareRequest;
 import io.github.dtm.labs.core.dtm.req.SubmitRequest;
 import io.github.dtm.labs.core.dtm.req.tcc.RegisterBranchRequest;
-import io.github.dtm.labs.core.dtm.res.BaseResponse;
-import io.github.dtm.labs.core.dtm.res.NewGidResponse;
-import io.github.dtm.labs.core.dtm.utils.HttpClient;
+import io.github.dtm.labs.core.dtm.utils.HttpClients;
 import io.github.dtm.labs.core.enums.TxType;
 import io.github.dtm.labs.core.exception.PrepareException;
 import io.github.dtm.labs.core.mode.tcc.TccGlobalTx;
 import io.github.dtm.labs.core.mode.tcc.entity.BusinessService;
 import io.github.dtm.labs.core.mode.tcc.entity.HttpRequest;
-import java.util.concurrent.atomic.AtomicInteger;
-import kong.unirest.HttpMethod;
-import kong.unirest.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.http.HttpResponse;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractTccGlobalTx implements TccGlobalTx {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -61,7 +57,7 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
      * 向 dtm 请求 gid
      * @return gid
      */
-    abstract protected String newGid();
+    protected abstract String newGid();
 
     @Override
     public boolean tryAndRegistryBranchTx(BusinessService branchTx) {
@@ -83,10 +79,13 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
             return false;
         }
 
-        HttpResponse<String> tryRes = HttpClient.getResponse(
-                tryRequest.getUrl(), HttpMethod.valueOf(tryRequest.getMethod()), tryRequest.getBody(), String.class);
-        if (tryRes.isSuccess()) {
-            return true;
+        try {
+            HttpResponse<String> tryRes = HttpClients.getResponse(
+                    tryRequest.getUrl(), tryRequest.getMethod(), tryRequest.getBody(), tryRequest.getListHeaders());
+            if (200 <= tryRes.statusCode() && tryRes.statusCode() < 300) {
+                return true;
+            }
+        } catch (Exception ignored) {
         }
         logger.error("branch transaction failed! call rollback!");
         AbortRequest abortRequest = new AbortRequest();

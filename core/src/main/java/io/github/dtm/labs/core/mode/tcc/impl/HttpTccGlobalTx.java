@@ -12,8 +12,8 @@ import io.github.dtm.labs.core.dtm.res.NewGidResponse;
 import io.github.dtm.labs.core.dtm.res.PrepareResponse;
 import io.github.dtm.labs.core.dtm.res.RegisterBranchResponse;
 import io.github.dtm.labs.core.dtm.res.SubmitResponse;
-import io.github.dtm.labs.core.dtm.utils.HttpClient;
-import kong.unirest.HttpMethod;
+import io.github.dtm.labs.core.dtm.utils.HttpClients;
+import jakarta.ws.rs.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ public class HttpTccGlobalTx extends AbstractTccGlobalTx {
     private static final Logger logger = LoggerFactory.getLogger(HttpTccGlobalTx.class);
 
     protected boolean registryBranchTx(RegisterBranchRequest registerBranchRequest) {
-        RegisterBranchResponse response = HttpClient.request(
+        RegisterBranchResponse response = HttpClients.request(
                 HttpApis.API_REGISTER_BRANCH, HttpMethod.POST, registerBranchRequest, RegisterBranchResponse.class);
         return isSuccess(response);
     }
@@ -29,27 +29,27 @@ public class HttpTccGlobalTx extends AbstractTccGlobalTx {
     @Override
     protected boolean prepare(PrepareRequest prepareRequest) {
         PrepareResponse response =
-                HttpClient.request(HttpApis.API_PREPARE, HttpMethod.POST, prepareRequest, PrepareResponse.class);
+                HttpClients.request(HttpApis.API_PREPARE, HttpMethod.POST, prepareRequest, PrepareResponse.class);
         return isSuccess(response);
     }
 
     protected boolean submit(SubmitRequest submitRequest) {
         SubmitResponse submitResponse =
-                HttpClient.request(HttpApis.API_SUBMIT, HttpMethod.POST, submitRequest, SubmitResponse.class);
+                HttpClients.request(HttpApis.API_SUBMIT, HttpMethod.POST, submitRequest, SubmitResponse.class);
         return isSuccess(submitResponse);
     }
 
     @Override
     protected boolean rollback(AbortRequest abortRequest) {
         AbortResponse abortResponse =
-                HttpClient.request(HttpApis.API_ABORT, HttpMethod.POST, abortRequest, AbortResponse.class);
+                HttpClients.request(HttpApis.API_ABORT, HttpMethod.POST, abortRequest, AbortResponse.class);
         return isSuccess(abortResponse);
     }
 
     @Override
     protected String newGid() {
         NewGidResponse newGidResponse =
-                HttpClient.request(HttpApis.API_NEW_GID, HttpMethod.GET, null, NewGidResponse.class);
+                HttpClients.request(HttpApis.API_NEW_GID, HttpMethod.GET, null, NewGidResponse.class);
         boolean success = isSuccess(newGidResponse);
         if (success) {
             return newGidResponse.getGid();

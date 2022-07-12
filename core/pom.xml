@@ -19,12 +19,6 @@
             <artifactId>gson</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.konghq</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>3.13.10</version>
-            <classifier>standalone</classifier>
-        </dependency>
-        <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
         </dependency>
@@ -45,6 +39,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -61,16 +56,6 @@
             <artifactId>postgresql</artifactId>
             <version>42.4.0</version>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>com.jcabi</groupId>
-            <artifactId>jcabi-jdbc</artifactId>
-            <version>0.17.8</version>
-        </dependency>
-        <dependency>
-            <groupId>com.evanlennick</groupId>
-            <artifactId>retry4j</artifactId>
-            <version>0.15.0</version>
         </dependency>
 
         <dependency>

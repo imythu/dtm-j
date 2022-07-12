@@ -1,5 +1,6 @@
 package io.github.dtm.labs.core.mode.tcc.impl;
 
+import com.google.gson.reflect.TypeToken;
 import io.github.dtm.labs.core.cfg.CfgHolder;
 import io.github.dtm.labs.core.constant.DtmConstant;
 import io.github.dtm.labs.core.constant.JsonrpcMethods;
@@ -12,13 +13,13 @@ import io.github.dtm.labs.core.dtm.res.NewGidResponse;
 import io.github.dtm.labs.core.dtm.res.PrepareResponse;
 import io.github.dtm.labs.core.dtm.res.RegisterBranchResponse;
 import io.github.dtm.labs.core.dtm.res.SubmitResponse;
-import io.github.dtm.labs.core.dtm.utils.HttpClient;
+import io.github.dtm.labs.core.dtm.utils.HttpClients;
 import io.github.dtm.labs.core.jsonrpc.JsonrpcRequest;
 import io.github.dtm.labs.core.jsonrpc.JsonrpcResponse;
+import jakarta.ws.rs.HttpMethod;
+
 import java.util.Objects;
 import java.util.Random;
-import kong.unirest.GenericType;
-import kong.unirest.HttpMethod;
 
 /**
  * @author zhuhf
@@ -31,7 +32,7 @@ public class JsonrpcTccGlobalTx extends AbstractTccGlobalTx {
     protected boolean registryBranchTx(RegisterBranchRequest registerBranchRequest) {
 
         String id = genId();
-        JsonrpcResponse<RegisterBranchResponse> response = HttpClient.request(
+        JsonrpcResponse<RegisterBranchResponse> response = HttpClients.request(
                 API_JSONRPC,
                 HttpMethod.POST,
                 JsonrpcRequest.<RegisterBranchRequest>builder()
@@ -39,14 +40,15 @@ public class JsonrpcTccGlobalTx extends AbstractTccGlobalTx {
                         .setMethod(JsonrpcMethods.REGISTER_BRANCH)
                         .setParams(registerBranchRequest)
                         .build(),
-                new GenericType<>() {});
+                new TypeToken<>() {
+                });
         return isSuccess(response, id);
     }
 
     @Override
     protected boolean prepare(PrepareRequest prepareRequest) {
         String id = genId();
-        JsonrpcResponse<PrepareResponse> response = HttpClient.request(
+        JsonrpcResponse<PrepareResponse> response = HttpClients.request(
                 API_JSONRPC,
                 HttpMethod.POST,
                 JsonrpcRequest.<PrepareRequest>builder()
@@ -54,14 +56,14 @@ public class JsonrpcTccGlobalTx extends AbstractTccGlobalTx {
                         .setMethod(JsonrpcMethods.PREPARE)
                         .setParams(prepareRequest)
                         .build(),
-                new GenericType<>() {});
+                new TypeToken<>() {});
         return isSuccess(response, id);
     }
 
     @Override
     protected boolean submit(SubmitRequest submitRequest) {
         String id = genId();
-        JsonrpcResponse<SubmitResponse> response = HttpClient.request(
+        JsonrpcResponse<SubmitResponse> response = HttpClients.request(
                 API_JSONRPC,
                 HttpMethod.POST,
                 JsonrpcRequest.<SubmitRequest>builder()
@@ -69,14 +71,14 @@ public class JsonrpcTccGlobalTx extends AbstractTccGlobalTx {
                         .setParams(submitRequest)
                         .setMethod(JsonrpcMethods.SUBMIT)
                         .build(),
-                new GenericType<>() {});
+                new TypeToken<>() {});
         return isSuccess(response, id);
     }
 
     @Override
     protected boolean rollback(AbortRequest abortRequest) {
         String id = genId();
-        JsonrpcResponse<AbortResponse> response = HttpClient.request(
+        JsonrpcResponse<AbortResponse> response = HttpClients.request(
                 API_JSONRPC,
                 HttpMethod.POST,
                 JsonrpcRequest.<AbortRequest>builder()
@@ -84,21 +86,21 @@ public class JsonrpcTccGlobalTx extends AbstractTccGlobalTx {
                         .setParams(abortRequest)
                         .setMethod(JsonrpcMethods.ABORT)
                         .build(),
-                new GenericType<>() {});
+                new TypeToken<>() {});
         return isSuccess(response, id);
     }
 
     @Override
     protected String newGid() {
         String id = genId();
-        JsonrpcResponse<NewGidResponse> response = HttpClient.request(
+        JsonrpcResponse<NewGidResponse> response = HttpClients.request(
                 API_JSONRPC,
                 HttpMethod.POST,
                 JsonrpcRequest.<Void>builder()
                         .setId(id)
                         .setMethod(JsonrpcMethods.NEW_GID)
                         .build(),
-                new GenericType<>() {});
+                new TypeToken<>() {});
         if (isSuccess(response, id)) {
             return response.getResult().getGid();
         }
