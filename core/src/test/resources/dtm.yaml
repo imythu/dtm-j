@@ -1,5 +1,6 @@
-dtmServer:
-  - docker.host.internal:35679
+
+server:
+  - "host.docker.internal:36789"
 db:
   url: mysql:jdbc://test.inusha.cn:3306/dtm_barrier
   username: root

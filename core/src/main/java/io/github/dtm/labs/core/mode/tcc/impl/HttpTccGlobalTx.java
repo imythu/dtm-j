@@ -1,81 +1,63 @@
 package io.github.dtm.labs.core.mode.tcc.impl;
 
-import com.google.common.base.MoreObjects;
+import io.github.dtm.labs.core.constant.DtmConstant;
+import io.github.dtm.labs.core.constant.HttpApis;
+import io.github.dtm.labs.core.dtm.req.AbortRequest;
 import io.github.dtm.labs.core.dtm.req.PrepareRequest;
+import io.github.dtm.labs.core.dtm.req.SubmitRequest;
 import io.github.dtm.labs.core.dtm.req.tcc.RegisterBranchRequest;
-import io.github.dtm.labs.core.dtm.utils.DtmHttpApis;
-import io.github.dtm.labs.core.enums.TxType;
-import io.github.dtm.labs.core.mode.tcc.TccGlobalTx;
-import io.github.dtm.labs.core.mode.tcc.entity.BusinessService;
-import kong.unirest.HttpResponse;
-import kong.unirest.RawResponse;
-import kong.unirest.Unirest;
+import io.github.dtm.labs.core.dtm.res.AbortResponse;
+import io.github.dtm.labs.core.dtm.res.BaseResponse;
+import io.github.dtm.labs.core.dtm.res.NewGidResponse;
+import io.github.dtm.labs.core.dtm.res.PrepareResponse;
+import io.github.dtm.labs.core.dtm.res.RegisterBranchResponse;
+import io.github.dtm.labs.core.dtm.res.SubmitResponse;
+import io.github.dtm.labs.core.dtm.utils.HttpClient;
+import kong.unirest.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-
-public class HttpTccGlobalTx implements TccGlobalTx {
+public class HttpTccGlobalTx extends AbstractTccGlobalTx {
     private static final Logger logger = LoggerFactory.getLogger(HttpTccGlobalTx.class);
-    private Runnable callback;
 
-    private AtomicInteger branchId = new AtomicInteger(1);
+    protected boolean registryBranchTx(RegisterBranchRequest registerBranchRequest) {
+        RegisterBranchResponse response = HttpClient.request(
+                HttpApis.API_REGISTER_BRANCH, HttpMethod.POST, registerBranchRequest, RegisterBranchResponse.class);
+        return isSuccess(response);
+    }
 
     @Override
-    public void addBranchTxList(List<BusinessService> branchTxList) {}
+    protected boolean prepare(PrepareRequest prepareRequest) {
+        PrepareResponse response =
+                HttpClient.request(HttpApis.API_PREPARE, HttpMethod.POST, prepareRequest, PrepareResponse.class);
+        return isSuccess(response);
+    }
+
+    protected boolean submit(SubmitRequest submitRequest) {
+        SubmitResponse submitResponse =
+                HttpClient.request(HttpApis.API_SUBMIT, HttpMethod.POST, submitRequest, SubmitResponse.class);
+        return isSuccess(submitResponse);
+    }
 
     @Override
-    public boolean addBranchTx(BusinessService branchTx) {
-        String gid = DtmHttpApis.newGid();
-        PrepareRequest prepareRequest = new PrepareRequest();
-        prepareRequest.setGid(gid);
-        boolean result = false;
-        boolean prepare = DtmHttpApis.prepare(prepareRequest);
-        if (prepare) {
-            RegisterBranchRequest registerBranchRequest = new RegisterBranchRequest();
-            registerBranchRequest
-                    .setConfirm(branchTx.getConfirmUrl())
-                    .setData(branchTx.getData())
-                    .setCancel(branchTx.getCancelUrl())
-                    .setBranchId(gid + branchId.getAndIncrement())
-                    .setGid(gid)
-                    .setTransType(TxType.TCC.getType());
-            boolean registerBranch = DtmHttpApis.registerBranch(registerBranchRequest);
-            if (!registerBranch) {
-                return false;
-            }
-                    Unirest.post(branchTx.getTryUrl()).body(branchTx.getData())
-                            .asObject(Object.class).ifSuccess(new Consumer<HttpResponse<Object>>() {
-                                @Override
-                                public void accept(HttpResponse<Object> res) {
-                                    Unirest.post(branchTx.getConfirmUrl())
-                                            .body(branchTx.getData())
-                                            .asObject(Object.class)
-                                            .ifSuccess(new Consumer<HttpResponse<Object>>() {
-                                                @Override
-                                                public void accept(HttpResponse<Object> objectHttpResponse) {
+    protected boolean rollback(AbortRequest abortRequest) {
+        AbortResponse abortResponse =
+                HttpClient.request(HttpApis.API_ABORT, HttpMethod.POST, abortRequest, AbortResponse.class);
+        return isSuccess(abortResponse);
+    }
 
-                                                }
-                                            })
-                                }
-                            })
-
+    @Override
+    protected String newGid() {
+        NewGidResponse newGidResponse =
+                HttpClient.request(HttpApis.API_NEW_GID, HttpMethod.GET, null, NewGidResponse.class);
+        boolean success = isSuccess(newGidResponse);
+        if (success) {
+            return newGidResponse.getGid();
         }
-        return result;
+        throw new RuntimeException(String.format("new gid failed! response: %s", newGidResponse));
     }
 
-    @Override
-    public void callback(Runnable runnable) {
-        this.callback = runnable;
+    protected static boolean isSuccess(BaseResponse baseResponse) {
+        return DtmConstant.RESULT_SUCCESS.equals(baseResponse.getDtmResult());
     }
-
-    @Override
-    public boolean start() {
-        return false;
-    }
-
-    private String newSubBranchId() {}
 }

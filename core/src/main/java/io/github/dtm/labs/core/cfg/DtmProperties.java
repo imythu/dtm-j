@@ -2,34 +2,36 @@ package io.github.dtm.labs.core.cfg;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
 
 /**
  * @author imythu
  */
 public class DtmProperties {
-    private List<String> dtmServer = new ArrayList<>(0);
+    private List<String> server = new ArrayList<>(0);
     private DbProperties db;
 
-    public List<String> getDtmServer() {
-        return dtmServer;
+    public List<String> getServer() {
+        return server;
     }
 
-    public DtmProperties setDtmServer(List<String> dtmServer) {
-        this.dtmServer = dtmServer;
-        return this;
+    public void setServer(List<String> server) {
+        this.server = server;
     }
 
     public DbProperties getDb() {
         return db;
     }
 
-    public DtmProperties setDb(DbProperties db) {
+    public void setDb(DbProperties db) {
         this.db = db;
-        return this;
     }
 
     @Override
     public String toString() {
-        return "DtmProperties{" + "dtmServer=" + dtmServer + ", db=" + db + '}';
+        return "DtmProperties{" +
+                "server=" + server +
+                ", db=" + db +
+                '}';
     }
 }

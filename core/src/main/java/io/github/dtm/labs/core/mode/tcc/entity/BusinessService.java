@@ -7,9 +7,8 @@ import lombok.Data;
  */
 @Data
 public class BusinessService {
-    private String tryUrl;
-    private String confirmUrl;
-    private String cancelUrl;
-    private String data;
-
+    private HttpRequest tryRequest;
+    private String  confirmRequest;
+    private String  cancelRequest;
+    private String confirmAndCancelRequestData;
 }

@@ -6,20 +6,20 @@ import java.io.Serializable;
  * json rpc 2.0 protocol request
  * @author imythu
  */
-public class Request<T> implements Serializable {
+public class JsonrpcRequest<T> implements Serializable {
 
     private final String jsonrpc = "2.0";
     private String method;
     private String id;
     private T params;
 
-    private Request(String method, String id, T params) {
+    private JsonrpcRequest(String method, String id, T params) {
         this.method = method;
         this.id = id;
         this.params = params;
     }
 
-    private Request() {}
+    private JsonrpcRequest() {}
 
     public static <T> Builder<T> builder() {
         return new Builder<>();
@@ -56,8 +56,8 @@ public class Request<T> implements Serializable {
             return this;
         }
 
-        public Request<T> build() {
-            return new Request<>(method, id, params);
+        public JsonrpcRequest<T> build() {
+            return new JsonrpcRequest<>(method, id, params);
         }
 
         @Override

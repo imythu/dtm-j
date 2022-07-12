@@ -7,6 +7,7 @@ import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
  * @author imythu
@@ -14,7 +15,7 @@ import org.yaml.snakeyaml.Yaml;
 public class CfgHolder {
     private static final Logger logger = LoggerFactory.getLogger(CfgHolder.class);
     private static volatile DtmProperties dtmProperties;
-    public static final String DEFAULT_CONFIG_FILE_NAME = "dtm.yaml";
+    public static final String DEFAULT_CONFIG_FILE_NAME = "/dtm.yaml";
 
     private CfgHolder() {}
 
@@ -39,7 +40,7 @@ public class CfgHolder {
                         if (inputStream == null) {
                             throw new RuntimeException("dtm.yaml does not exist.");
                         }
-                        dtmProperties = new Yaml().loadAs(new InputStreamReader(inputStream), DtmProperties.class);
+                        dtmProperties = new Yaml(new Constructor(DtmProperties.class)).load(new InputStreamReader(inputStream));
                     }
                 }
             }

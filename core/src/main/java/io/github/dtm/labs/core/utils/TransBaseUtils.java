@@ -6,7 +6,7 @@ import io.github.dtm.labs.core.constant.GlobalTransactionType;
 import io.github.dtm.labs.core.exception.DtmFailureException;
 import io.github.dtm.labs.core.exception.DtmOngoingException;
 import io.github.dtm.labs.core.exception.PrepareException;
-import io.github.dtm.labs.core.jsonrpc.Request;
+import io.github.dtm.labs.core.jsonrpc.JsonrpcRequest;
 import io.github.dtm.labs.core.mode.base.TransBase;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -42,7 +42,7 @@ public class TransBaseUtils {
             if (DtmConstant.JRPC.equals(t.getProtocol())) {
                 HttpResponse<String> response = Unirest.post(t.getDtm())
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                        .body(JsonUtils.toJson(Request.<Object>builder()
+                        .body(JsonUtils.toJson(JsonrpcRequest.<Object>builder()
                                 .setId("no-use")
                                 .setMethod(methodOrPath)
                                 .setParams(body)

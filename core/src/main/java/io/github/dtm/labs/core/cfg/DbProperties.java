@@ -21,27 +21,24 @@ public class DbProperties {
         return url;
     }
 
-    public DbProperties setUrl(String url) {
+    public void setUrl(String url) {
         this.url = url;
-        return this;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public DbProperties setUsername(String username) {
+    public void setUsername(String username) {
         this.username = username;
-        return this;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public DbProperties setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
-        return this;
     }
 
     @Override
