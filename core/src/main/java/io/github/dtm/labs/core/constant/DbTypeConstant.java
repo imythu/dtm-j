@@ -4,7 +4,7 @@ import com.mysql.cj.jdbc.DatabaseMetaData;
 import org.postgresql.jdbc.PgDatabaseMetaData;
 
 /**
- * @author zhuhf
+ * @author imythu
  */
 public interface DbTypeConstant {
 

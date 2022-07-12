@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * @author zhuhf
+ * @author imythu
  */
 public abstract class AbstractDbSpecial implements DbSpecial {
     private volatile PreparedStatement preparedStatement;

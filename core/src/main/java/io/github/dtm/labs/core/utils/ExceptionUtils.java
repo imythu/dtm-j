@@ -5,7 +5,7 @@ import io.github.dtm.labs.core.compatible.golang.error.Error;
 import io.github.dtm.labs.core.compatible.golang.error.Errors;
 
 /**
- * @author zhuhf
+ * @author imythu
  */
 public class ExceptionUtils {
     private ExceptionUtils() {}

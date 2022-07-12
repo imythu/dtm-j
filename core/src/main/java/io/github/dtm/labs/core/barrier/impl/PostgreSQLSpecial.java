@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * @author zhuhf
+ * @author imythu
  */
 public class PostgreSQLSpecial extends AbstractDbSpecial {
     static {

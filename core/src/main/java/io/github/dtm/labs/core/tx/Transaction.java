@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * @author zhuhf
+ * @author imythu
  */
 public class Transaction {
     private final Connection connection;

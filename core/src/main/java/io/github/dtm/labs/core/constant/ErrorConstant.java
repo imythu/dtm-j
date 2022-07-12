@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * @author zhuhf
+ * @author imythu
  */
 public interface ErrorConstant {
 
