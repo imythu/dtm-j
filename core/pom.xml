@@ -38,12 +38,19 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <optional>true</optional>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-core</artifactId>
+            <version>1.47.0</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <artifactId>slf4j-simple</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

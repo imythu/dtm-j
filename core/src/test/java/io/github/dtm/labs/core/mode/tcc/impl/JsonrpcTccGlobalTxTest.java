@@ -1,25 +1,19 @@
 package io.github.dtm.labs.core.mode.tcc.impl;
 
-import static io.github.dtm.labs.core.mode.tcc.impl.HttpTccGlobalTxTest.test;
+import static io.github.dtm.labs.core.mode.tcc.impl.TestAction.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.github.dtm.labs.core.mode.tcc.TccGlobalTx;
-import io.github.dtm.labs.core.mode.tcc.entity.BusinessService;
-import io.github.dtm.labs.core.mode.tcc.impl.HttpServer.Req;
-import io.github.dtm.labs.core.mode.tcc.impl.HttpServer.Res;
-import jakarta.ws.rs.HttpMethod;
+import io.github.dtm.labs.core.HttpServer;
+import io.github.dtm.labs.core.HttpServer.Req;
+import io.github.dtm.labs.core.HttpServer.Res;
+import io.github.dtm.labs.core.TestData;
 import jakarta.ws.rs.core.Response.Status;
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.function.BiFunction;
 import java.util.function.Function;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +24,7 @@ import org.slf4j.LoggerFactory;
 class JsonrpcTccGlobalTxTest {
     private static final Logger logger = LoggerFactory.getLogger(JsonrpcTccGlobalTxTest.class);
     private static final int port = 12345;
-    private static Map<String, CountDownLatch> blockerMap = new ConcurrentHashMap<>(8);
+    private static final Map<String, CountDownLatch> blockerMap = new ConcurrentHashMap<>(8);
 
     static {
         HttpServer httpServer = new HttpServer();
@@ -57,7 +51,7 @@ class JsonrpcTccGlobalTxTest {
         logger.info("submitId: {}", submitId);
         CountDownLatch blocker = new CountDownLatch(1);
         blockerMap.put(submitId, blocker);
-        assertEquals(HttpTccGlobalTxTest.submitSuccess, test(submitId, new JsonrpcTccGlobalTx(), blocker));
+        assertEquals(HttpTccGlobalTxTest.submitSuccess, test(submitId, new JsonrpcTccGlobalTx(), blocker, port));
     }
 
     @Test
@@ -66,6 +60,6 @@ class JsonrpcTccGlobalTxTest {
         logger.info("rollbackId: {}", rollbackId);
         CountDownLatch blocker = new CountDownLatch(1);
         blockerMap.put(rollbackId, blocker);
-        assertEquals(HttpTccGlobalTxTest.rollbackSuccess, test(rollbackId, new JsonrpcTccGlobalTx(), blocker));
+        assertEquals(HttpTccGlobalTxTest.rollbackSuccess, test(rollbackId, new JsonrpcTccGlobalTx(), blocker, port));
     }
 }

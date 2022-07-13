@@ -1,17 +1,15 @@
 package io.github.dtm.labs.core.mode.tcc.impl;
 
+import static io.github.dtm.labs.core.mode.tcc.impl.TestAction.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.github.dtm.labs.core.mode.tcc.TccGlobalTx;
-import io.github.dtm.labs.core.mode.tcc.entity.BusinessService;
-import io.github.dtm.labs.core.mode.tcc.impl.HttpServer.Req;
-import io.github.dtm.labs.core.mode.tcc.impl.HttpServer.Res;
-import jakarta.ws.rs.HttpMethod;
+import io.github.dtm.labs.core.HttpServer;
+import io.github.dtm.labs.core.HttpServer.Req;
+import io.github.dtm.labs.core.HttpServer.Res;
+import io.github.dtm.labs.core.TestData;
 import jakarta.ws.rs.core.Response.Status;
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -34,14 +32,15 @@ class HttpTccGlobalTxTest {
         HttpServer httpServer = new HttpServer();
         httpServer.start(port);
         Function<Req, Res<Object>> handler = req -> {
-            TestData map =
-                    io.github.dtm.labs.core.mode.tcc.impl.HttpServer.gson.fromJson(req.getBody(), TestData.class);
+            TestData map = HttpServer.gson.fromJson(req.getBody(), TestData.class);
             logger.info("{} received: {}", req.getPath(), map);
             blockerMap.computeIfPresent(map.id, (s, countDownLatch) -> {
                 countDownLatch.countDown();
                 return countDownLatch;
             });
-            return new Res<>(map.id.contains("rollback") ? Status.CONFLICT : Status.OK, map);
+            return new Res<>(
+                    Objects.equals(req.getPath(), "/try") && map.id.contains("rollback") ? Status.CONFLICT : Status.OK,
+                    map);
         };
         httpServer.addJsonHandler("/try", handler);
         httpServer.addJsonHandler("/confirm", handler);
@@ -54,7 +53,7 @@ class HttpTccGlobalTxTest {
         CountDownLatch blocker = new CountDownLatch(1);
         logger.info("submitId: {}", submitId);
         blockerMap.put(submitId, blocker);
-        assertEquals(HttpTccGlobalTxTest.submitSuccess, test(submitId, new HttpTccGlobalTx(), blocker));
+        assertEquals(HttpTccGlobalTxTest.submitSuccess, test(submitId, new HttpTccGlobalTx(), blocker, port));
     }
 
     @Test
@@ -63,29 +62,6 @@ class HttpTccGlobalTxTest {
         logger.info("rollbackId: {}", rollbackId);
         CountDownLatch blocker = new CountDownLatch(1);
         blockerMap.put(rollbackId, blocker);
-        assertEquals(HttpTccGlobalTxTest.rollbackSuccess, test(rollbackId, new HttpTccGlobalTx(), blocker));
-    }
-
-    public static String test(String id, TccGlobalTx tccGlobalTx, CountDownLatch blocker) throws InterruptedException {
-        tccGlobalTx.prepare();
-        String prefix = "http://host.docker.internal:" + port;
-        String body = io.github.dtm.labs.core.mode.tcc.impl.HttpServer.gson.toJson(new TestData(id));
-        boolean tryAndRegistryBranchTx = tccGlobalTx.tryAndRegistryBranchTx(new BusinessService()
-                .setConfirmRequest(prefix + "/confirm")
-                .setCancelRequest(prefix + "/cancel")
-                .setTryRequest(HttpRequest.newBuilder()
-                        .uri(URI.create(prefix + "/try"))
-                        .method(HttpMethod.POST, BodyPublishers.ofString(body))
-                        .build())
-                .setConfirmAndCancelRequestData(body));
-        if (!tryAndRegistryBranchTx) {
-            tccGlobalTx.rollback();
-            blocker.await();
-            return HttpTccGlobalTxTest.rollbackSuccess;
-        }
-        tccGlobalTx.submit();
-        blocker.await();
-
-        return HttpTccGlobalTxTest.submitSuccess;
+        assertEquals(HttpTccGlobalTxTest.rollbackSuccess, test(rollbackId, new HttpTccGlobalTx(), blocker, port));
     }
 }

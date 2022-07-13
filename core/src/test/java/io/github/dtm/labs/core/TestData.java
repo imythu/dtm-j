@@ -1,9 +1,9 @@
-package io.github.dtm.labs.core.mode.tcc.impl;
+package io.github.dtm.labs.core;
 
 /**
  * @author zhuhf
  */
-class TestData {
+public class TestData {
 
     public String id;
 

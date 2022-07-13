@@ -68,7 +68,7 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
                 .setConfirm(branchTx.getConfirmRequest())
                 .setData(branchTx.getConfirmAndCancelRequestData())
                 .setCancel(branchTx.getCancelRequest())
-                .setBranchId(gid + branchId.getAndIncrement())
+                .setBranchId(String.format("%02d", branchId.getAndIncrement()))
                 .setGid(gid)
                 .setTransType(TxType.TCC.getType());
         boolean registerBranch = registryBranchTx(registerBranchRequest);
@@ -79,6 +79,7 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
         try {
             HttpResponse<String> tryRes = HttpClients.getResponse(branchTx.getTryRequest());
             if (200 <= tryRes.statusCode() && tryRes.statusCode() < 300) {
+                logger.info("register branch [gid: {}, branchId: {}] successful", gid, registerBranchRequest.getBranchId());
                 return true;
             }
         } catch (Exception ignored) {
@@ -101,13 +102,17 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
         if (!prepared) {
             throw new PrepareException();
         }
+        logger.info("prepare [{}] successful", gid);
     }
 
     public boolean submit() {
         SubmitRequest submitRequest = new SubmitRequest();
         submitRequest.setGid(gid).setTransType(TxType.TCC.getType());
 
-        return submit(submitRequest);
+        boolean submit = submit(submitRequest);
+
+        logger.info("submit [{}] {}", gid, submit ? "successful" : "failed");
+        return submit;
     }
 
     @Override

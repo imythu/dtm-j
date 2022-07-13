@@ -1,4 +1,4 @@
-package io.github.dtm.labs.core.mode.tcc.impl;
+package io.github.dtm.labs.core;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -26,7 +26,7 @@ public class HttpServer {
             .create();
 
     public void start(int port) {
-        Undertow.builder()
+        Undertow undertow = Undertow.builder()
                 .addHttpListener(port, "0.0.0.0")
                 .setHandler(new BlockingHandler(exchange -> {
                     String uri = exchange.getRequestURI();
@@ -34,7 +34,8 @@ public class HttpServer {
                     Function<Req, Res<Object>> function = pathJsonHandlerMap.get(
                             uri);
                     if (function != null) {
-                        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+                        exchange.getResponseHeaders()
+                                .put(Headers.CONTENT_TYPE, MediaType.APPLICATION_JSON);
                         exchange.getRequestReceiver().receiveFullString((exchange1, message) -> {
                             Res<Object> res = function.apply(
                                     new Req(uri, message));
@@ -43,16 +44,22 @@ public class HttpServer {
                         });
                         return;
                     }
-                    Consumer<HttpServerExchange> consumer = pathHandlerMap.getOrDefault(uri, new Consumer<HttpServerExchange>() {
-                        @Override
-                        public void accept(HttpServerExchange httpServerExchange) {
-                            httpServerExchange.getResponseHeaders().put(Headers.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-                            httpServerExchange.setStatusCode(Status.NOT_FOUND.getStatusCode());
-                            httpServerExchange.getResponseSender().send("{\"code\": \"not found\"}");
-                        }
-                    });
+                    Consumer<HttpServerExchange> consumer = pathHandlerMap.getOrDefault(uri,
+                            new Consumer<HttpServerExchange>() {
+                                @Override
+                                public void accept(HttpServerExchange httpServerExchange) {
+                                    httpServerExchange.getResponseHeaders()
+                                            .put(Headers.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+                                    httpServerExchange.setStatusCode(
+                                            Status.NOT_FOUND.getStatusCode());
+                                    httpServerExchange.getResponseSender()
+                                            .send("{\"code\": \"not found\"}");
+                                }
+                            });
                     consumer.accept(exchange);
-                })).build().start();
+                })).build();
+        undertow.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(undertow::stop));
     }
 
     public void addHandler(String path, Consumer<HttpServerExchange> handler) {
