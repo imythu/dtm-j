@@ -33,39 +33,39 @@ class JsonrpcTccGlobalTxTest {
     private static Map<String, CountDownLatch> blockerMap = new ConcurrentHashMap<>(8);
 
     static {
-        HttpServer.start(port);
+        HttpServer httpServer = new HttpServer();
+        httpServer.start(port);
         Function<Req, Res<Object>> handler = req -> {
             TestData map = HttpServer.gson.fromJson(req.getBody(), TestData.class);
             logger.info("{} received: {}", req.getPath(), map);
-            blockerMap.computeIfPresent(map.id,
-                    (s, countDownLatch) -> {
-                        countDownLatch.countDown();
-                        return countDownLatch;
-                    });
-            return new Res<>(map.id.contains("rollback") ? Status.CONFLICT : Status.OK, map);
+            blockerMap.computeIfPresent(map.id, (s, countDownLatch) -> {
+                countDownLatch.countDown();
+                return countDownLatch;
+            });
+            return new Res<>(
+                    Objects.equals(req.getPath(), "/try") && map.id.contains("rollback") ? Status.CONFLICT : Status.OK,
+                    map);
         };
-        HttpServer.addJsonHandler("/try", handler);
-        HttpServer.addJsonHandler("/confirm", handler);
-        HttpServer.addJsonHandler("/cancel", handler);
+        httpServer.addJsonHandler("/try", handler);
+        httpServer.addJsonHandler("/confirm", handler);
+        httpServer.addJsonHandler("/cancel", handler);
     }
 
     @Test
     public void testCommitTransactionNormally() throws InterruptedException {
         String submitId = "submit" + new Random().nextInt(100);
+        logger.info("submitId: {}", submitId);
         CountDownLatch blocker = new CountDownLatch(1);
         blockerMap.put(submitId, blocker);
-        assertEquals(
-                HttpTccGlobalTxTest.submitSuccess,
-                test(submitId, new JsonrpcTccGlobalTx(), blocker));
+        assertEquals(HttpTccGlobalTxTest.submitSuccess, test(submitId, new JsonrpcTccGlobalTx(), blocker));
     }
 
     @Test
     public void testRollbackTransaction() throws InterruptedException {
         String rollbackId = "rollback" + new Random().nextInt(100);
+        logger.info("rollbackId: {}", rollbackId);
         CountDownLatch blocker = new CountDownLatch(1);
         blockerMap.put(rollbackId, blocker);
-        assertEquals(
-                HttpTccGlobalTxTest.rollbackSuccess,
-                test(rollbackId, new JsonrpcTccGlobalTx(), blocker));
+        assertEquals(HttpTccGlobalTxTest.rollbackSuccess, test(rollbackId, new JsonrpcTccGlobalTx(), blocker));
     }
 }

@@ -19,14 +19,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class HttpServer {
-    private HttpServer(){}
-    private static final Map<String, Consumer<HttpServerExchange>> pathHandlerMap = new HashMap<>();
-    private static final Map<String, Function<Req, Res<Object>>> pathJsonHandlerMap = new HashMap<>();
+    private final Map<String, Consumer<HttpServerExchange>> pathHandlerMap = new HashMap<>();
+    private final Map<String, Function<Req, Res<Object>>> pathJsonHandlerMap = new HashMap<>();
     public static final Gson gson = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
-    public static void start(int port) {
+    public void start(int port) {
         Undertow.builder()
                 .addHttpListener(port, "0.0.0.0")
                 .setHandler(new BlockingHandler(exchange -> {
@@ -36,14 +35,11 @@ public class HttpServer {
                             uri);
                     if (function != null) {
                         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-                        exchange.getRequestReceiver().receiveFullString(new FullStringCallback() {
-                            @Override
-                            public void handle(HttpServerExchange exchange, String message) {
-                                Res<Object> res = function.apply(
-                                        new Req(uri, message));
-                                exchange.setStatusCode(res.status.getStatusCode());
-                                exchange.getResponseSender().send(gson.toJson(res.data));
-                            }
+                        exchange.getRequestReceiver().receiveFullString((exchange1, message) -> {
+                            Res<Object> res = function.apply(
+                                    new Req(uri, message));
+                            exchange1.setStatusCode(res.status.getStatusCode());
+                            exchange1.getResponseSender().send(gson.toJson(res.data));
                         });
                         return;
                     }
@@ -59,11 +55,11 @@ public class HttpServer {
                 })).build().start();
     }
 
-    public static void addHandler(String path, Consumer<HttpServerExchange> handler) {
+    public void addHandler(String path, Consumer<HttpServerExchange> handler) {
         pathHandlerMap.put(path, handler);
     }
 
-    public static void addJsonHandler(String path, Function<Req, Res<Object>> handler) {
+    public void addJsonHandler(String path, Function<Req, Res<Object>> handler) {
         pathJsonHandlerMap.put(path, handler);
     }
 
