@@ -31,7 +31,8 @@ class HttpTccGlobalTxTest {
     private static final Map<String, CountDownLatch> blockerMap = new ConcurrentHashMap<>(8);
 
     static {
-        io.github.dtm.labs.core.mode.tcc.impl.HttpServer.start(port);
+        HttpServer httpServer = new HttpServer();
+        httpServer.start(port);
         Function<Req, Res<Object>> handler = req -> {
             TestData map =
                     io.github.dtm.labs.core.mode.tcc.impl.HttpServer.gson.fromJson(req.getBody(), TestData.class);
@@ -42,15 +43,16 @@ class HttpTccGlobalTxTest {
             });
             return new Res<>(map.id.contains("rollback") ? Status.CONFLICT : Status.OK, map);
         };
-        io.github.dtm.labs.core.mode.tcc.impl.HttpServer.addJsonHandler("/try", handler);
-        io.github.dtm.labs.core.mode.tcc.impl.HttpServer.addJsonHandler("/confirm", handler);
-        HttpServer.addJsonHandler("/cancel", handler);
+        httpServer.addJsonHandler("/try", handler);
+        httpServer.addJsonHandler("/confirm", handler);
+        httpServer.addJsonHandler("/cancel", handler);
     }
 
     @Test
     public void testCommitTransactionNormally() throws InterruptedException {
         String submitId = "submit" + new Random().nextInt(100);
         CountDownLatch blocker = new CountDownLatch(1);
+        logger.info("submitId: {}", submitId);
         blockerMap.put(submitId, blocker);
         assertEquals(HttpTccGlobalTxTest.submitSuccess, test(submitId, new HttpTccGlobalTx(), blocker));
     }
@@ -58,6 +60,7 @@ class HttpTccGlobalTxTest {
     @Test
     public void testRollbackTransaction() throws InterruptedException {
         String rollbackId = "rollback" + new Random().nextInt(100);
+        logger.info("rollbackId: {}", rollbackId);
         CountDownLatch blocker = new CountDownLatch(1);
         blockerMap.put(rollbackId, blocker);
         assertEquals(HttpTccGlobalTxTest.rollbackSuccess, test(rollbackId, new HttpTccGlobalTx(), blocker));
