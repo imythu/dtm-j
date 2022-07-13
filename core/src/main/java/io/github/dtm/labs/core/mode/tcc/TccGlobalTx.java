@@ -9,7 +9,7 @@ import io.github.dtm.labs.core.mode.tcc.entity.BusinessService;
 public interface TccGlobalTx {
 
     /**
-     * 注册并调用 try 分支事务
+     * 注册并调用 try 分支事务。 try 响应码 [200,300) 为成功，否则为失败
      * @param branchTx 分支事务
      * @return 添加成功返回 true，否则返回 false
      */

@@ -1,5 +1,6 @@
 package io.github.dtm.labs.core.mode.tcc.entity;
 
+import java.net.http.HttpRequest;
 import lombok.Data;
 
 /**

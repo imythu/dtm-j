@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
+import java.net.http.HttpRequest.BodyPublishers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +54,13 @@ public class HttpClients {
             builder.header(name, String.join(",", value));
         });
         HttpRequest httpRequest = builder.build();
+        return getResponse(httpRequest);
+    }
+
+    public static HttpResponse<String> getResponse(HttpRequest httpRequest) {
+        String api = httpRequest.uri().toString();
+        String method = httpRequest.method();
+        String body = httpRequest.bodyPublisher().orElse(BodyPublishers.noBody()).toString();
         try {
             HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             int statusCode = response.statusCode();

@@ -9,12 +9,10 @@ import io.github.dtm.labs.core.enums.TxType;
 import io.github.dtm.labs.core.exception.PrepareException;
 import io.github.dtm.labs.core.mode.tcc.TccGlobalTx;
 import io.github.dtm.labs.core.mode.tcc.entity.BusinessService;
-import io.github.dtm.labs.core.mode.tcc.entity.HttpRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.http.HttpResponse;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractTccGlobalTx implements TccGlobalTx {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -66,7 +64,6 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
         }
 
         RegisterBranchRequest registerBranchRequest = new RegisterBranchRequest();
-        HttpRequest tryRequest = branchTx.getTryRequest();
         registerBranchRequest
                 .setConfirm(branchTx.getConfirmRequest())
                 .setData(branchTx.getConfirmAndCancelRequestData())
@@ -80,8 +77,7 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
         }
 
         try {
-            HttpResponse<String> tryRes = HttpClients.getResponse(
-                    tryRequest.getUrl(), tryRequest.getMethod(), tryRequest.getBody(), tryRequest.getListHeaders());
+            HttpResponse<String> tryRes = HttpClients.getResponse(branchTx.getTryRequest());
             if (200 <= tryRes.statusCode() && tryRes.statusCode() < 300) {
                 return true;
             }
