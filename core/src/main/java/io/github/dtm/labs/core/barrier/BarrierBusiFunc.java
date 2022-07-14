@@ -6,12 +6,14 @@ import io.github.dtm.labs.core.tx.Transaction;
 
 /**
  * type for busi func
+ *
  * @author imythu
  */
 @FunctionalInterface
 public interface BarrierBusiFunc {
     /**
      * type for busi func
+     *
      * @param transaction for transactional operations
      * @throws BarrierException BarrierException
      */

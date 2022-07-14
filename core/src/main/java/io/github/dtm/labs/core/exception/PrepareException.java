@@ -2,6 +2,7 @@ package io.github.dtm.labs.core.exception;
 
 /**
  * <strong>msg</strong> prepare exception
+ *
  * @author imythu
  */
 public class PrepareException extends MsgTransactionException {
@@ -21,7 +22,11 @@ public class PrepareException extends MsgTransactionException {
         super(cause);
     }
 
-    protected PrepareException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected PrepareException(
+            String message,
+            Throwable cause,
+            boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

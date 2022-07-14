@@ -84,9 +84,7 @@ public class BranchBarrier {
         return this;
     }
 
-    /**
-     * the same as {@link #call(Connection, BarrierBusiFunc)}
-     */
+    /** the same as {@link #call(Connection, BarrierBusiFunc)} */
     public Error callWithDb(Connection connection, BarrierBusiFunc barrierBusiFunc) {
         Error error = ExceptionUtils.execute(() -> connection.setAutoCommit(false));
         if (error == null) {
@@ -96,7 +94,9 @@ public class BranchBarrier {
     }
 
     /**
-     * see detail description in <a href="https://en.dtm.pub/practice/barrier.html">https://en.dtm.pub/practice/barrier.html</a>
+     * see detail description in <a
+     * href="https://en.dtm.pub/practice/barrier.html">https://en.dtm.pub/practice/barrier.html</a>
+     *
      * @param connection local transaction connection
      * @param barrierBusiFunc busi func
      */
@@ -111,26 +111,32 @@ public class BranchBarrier {
         }
 
         String finalOriginOp = originOp;
-        ReturnVal<Integer> originVal = ExceptionUtils.execute(() -> DbUtils.getDbSpecial(connection)
-                .executeInsertIgnoreSql(
-                        connection,
-                        new BarrierDO()
-                                .setTransType(transType)
-                                .setGid(gid)
-                                .setBranchId(branchID)
-                                .setOp(finalOriginOp)
-                                .setBarrierId(bid)
-                                .setReason(op)));
-        ReturnVal<Integer> currentVal = ExceptionUtils.execute(() -> DbUtils.getDbSpecial(connection)
-                .executeInsertIgnoreSql(
-                        connection,
-                        new BarrierDO()
-                                .setTransType(transType)
-                                .setGid(gid)
-                                .setBranchId(branchID)
-                                .setOp(op)
-                                .setBarrierId(bid)
-                                .setReason(op)));
+        ReturnVal<Integer> originVal =
+                ExceptionUtils.execute(
+                        () ->
+                                DbUtils.getDbSpecial(connection)
+                                        .executeInsertIgnoreSql(
+                                                connection,
+                                                new BarrierDO()
+                                                        .setTransType(transType)
+                                                        .setGid(gid)
+                                                        .setBranchId(branchID)
+                                                        .setOp(finalOriginOp)
+                                                        .setBarrierId(bid)
+                                                        .setReason(op)));
+        ReturnVal<Integer> currentVal =
+                ExceptionUtils.execute(
+                        () ->
+                                DbUtils.getDbSpecial(connection)
+                                        .executeInsertIgnoreSql(
+                                                connection,
+                                                new BarrierDO()
+                                                        .setTransType(transType)
+                                                        .setGid(gid)
+                                                        .setBranchId(branchID)
+                                                        .setOp(op)
+                                                        .setBarrierId(bid)
+                                                        .setReason(op)));
         int originAffected = originVal.getValue();
         Error oerr = originVal.getErr();
         int currentAffected = currentVal.getValue();
@@ -145,7 +151,8 @@ public class BranchBarrier {
             rerr = oerr;
         }
         // null compensate
-        boolean isCancelOrComPensateOp = DtmConstant.OP_CANCEL.equals(op) || DtmConstant.OP_COMPENSATE.equals(op);
+        boolean isCancelOrComPensateOp =
+                DtmConstant.OP_CANCEL.equals(op) || DtmConstant.OP_COMPENSATE.equals(op);
         if (isCancelOrComPensateOp && originAffected > 0) {
             currentAffected = 0;
         }
@@ -157,11 +164,21 @@ public class BranchBarrier {
 
     @Override
     public String toString() {
-        return "BranchBarrier{" + "transType='"
-                + transType + '\'' + ", gid='"
-                + gid + '\'' + ", branchID='"
-                + branchID + '\'' + ", op='"
-                + op + '\'' + ", barrierID="
-                + barrierID + '}';
+        return "BranchBarrier{"
+                + "transType='"
+                + transType
+                + '\''
+                + ", gid='"
+                + gid
+                + '\''
+                + ", branchID='"
+                + branchID
+                + '\''
+                + ", op='"
+                + op
+                + '\''
+                + ", barrierID="
+                + barrierID
+                + '}';
     }
 }

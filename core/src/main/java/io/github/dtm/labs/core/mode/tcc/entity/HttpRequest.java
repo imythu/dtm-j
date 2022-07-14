@@ -2,7 +2,6 @@ package io.github.dtm.labs.core.mode.tcc.entity;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -19,17 +18,20 @@ public class HttpRequest {
 
     private HttpRequest() {}
 
-    public static HttpRequest build(String url, String method, Map<String, String> headers, byte[] body) {
+    public static HttpRequest build(
+            String url, String method, Map<String, String> headers, byte[] body) {
         HttpRequest httpRequest = new HttpRequest();
         httpRequest.url = url;
         httpRequest.method = method;
         httpRequest.listHeaders = new HashMap<>(headers.size());
-        headers.forEach((key, value) -> httpRequest.listHeaders.put(key, Lists.newArrayList(value)));
+        headers.forEach(
+                (key, value) -> httpRequest.listHeaders.put(key, Lists.newArrayList(value)));
         httpRequest.body = body;
         return httpRequest;
     }
 
-    public static HttpRequest buildWithListHeaders(String url, Map<String, List<String>> headers, byte[] body) {
+    public static HttpRequest buildWithListHeaders(
+            String url, Map<String, List<String>> headers, byte[] body) {
         HttpRequest httpRequest = new HttpRequest();
         httpRequest.url = url;
         httpRequest.listHeaders = new HashMap<>(headers.size());
@@ -49,26 +51,30 @@ public class HttpRequest {
     }
 
     public HttpRequest addHeader(String name, String value) {
-        this.listHeaders.compute(name, (s, strings) -> {
-            if (strings == null) {
-                strings = Lists.newArrayList(value);
-            } else {
-                strings.add(value);
-            }
-            return strings;
-        });
+        this.listHeaders.compute(
+                name,
+                (s, strings) -> {
+                    if (strings == null) {
+                        strings = Lists.newArrayList(value);
+                    } else {
+                        strings.add(value);
+                    }
+                    return strings;
+                });
         return this;
     }
 
     public HttpRequest addHeader(String name, List<String> value) {
-        this.listHeaders.compute(name, (s, strings) -> {
-            if (strings == null) {
-                strings = Lists.newArrayList(value);
-            } else {
-                strings.addAll(value);
-            }
-            return strings;
-        });
+        this.listHeaders.compute(
+                name,
+                (s, strings) -> {
+                    if (strings == null) {
+                        strings = Lists.newArrayList(value);
+                    } else {
+                        strings.addAll(value);
+                    }
+                    return strings;
+                });
         return this;
     }
 
@@ -110,11 +116,17 @@ public class HttpRequest {
 
     @Override
     public String toString() {
-        return "HttpRequest{" +
-                "url='" + url + '\'' +
-                ", method='" + method + '\'' +
-                ", listHeaders=" + listHeaders +
-                ", body=" + Arrays.toString(body) +
-                '}';
+        return "HttpRequest{"
+                + "url='"
+                + url
+                + '\''
+                + ", method='"
+                + method
+                + '\''
+                + ", listHeaders="
+                + listHeaders
+                + ", body="
+                + Arrays.toString(body)
+                + '}';
     }
 }

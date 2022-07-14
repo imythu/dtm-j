@@ -47,26 +47,27 @@ public interface MsgTransaction<T extends Msg> {
 
     /**
      * short method for Do on db type. please see {@link #doAndSubmit}
+     *
      * @param queryPrepared
      * @param barrierBusiFunc
      * @throws DoAndSubmitDbException
      */
-    void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc) throws DoAndSubmitDbException;
+    void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc)
+            throws DoAndSubmitDbException;
 
     /**
-     * one method for the entire prepare->busi->submit
-     * the error returned by busiCall will be returned
-     * if busiCall return ErrFailure, then abort is called directly
-     * if busiCall return not nil error other than ErrFailure, then DoAndSubmit will call queryPrepared to get the result
+     * one method for the entire prepare->busi->submit the error returned by busiCall will be
+     * returned if busiCall return ErrFailure, then abort is called directly if busiCall return not
+     * nil error other than ErrFailure, then DoAndSubmit will call queryPrepared to get the result
+     *
      * @param queryPrepared
      * @param busiCall
      * @throws DoAndSubmitException
      */
-    void doAndSubmit(String queryPrepared, Consumer<BranchBarrier> busiCall) throws DoAndSubmitException;
+    void doAndSubmit(String queryPrepared, Consumer<BranchBarrier> busiCall)
+            throws DoAndSubmitException;
 
-    /**
-     * add custom options to the request context
-     */
+    /** add custom options to the request context */
     void buildCustomOptions();
 
     /**

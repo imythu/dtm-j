@@ -28,19 +28,22 @@ public class CfgHolder {
         if (dtmProperties == null) {
             synchronized (CfgHolder.class) {
                 if (dtmProperties == null) {
-                    Optional<CfgReader> first =
-                            ServiceLoader.load(CfgReader.class).findFirst();
+                    Optional<CfgReader> first = ServiceLoader.load(CfgReader.class).findFirst();
                     if (first.isPresent()) {
                         CfgReader cfgReader = first.get();
                         logger.info("Use CfgReader: {}.", cfgReader.getClass().getName());
                         dtmProperties = cfgReader.read();
                     } else {
-                        logger.info("CfgReader is not implemented, reads configuration from classpath:dtm.yaml.");
-                        InputStream inputStream = CfgHolder.class.getResourceAsStream(DEFAULT_CONFIG_FILE_NAME);
+                        logger.info(
+                                "CfgReader is not implemented, reads configuration from classpath:dtm.yaml.");
+                        InputStream inputStream =
+                                CfgHolder.class.getResourceAsStream(DEFAULT_CONFIG_FILE_NAME);
                         if (inputStream == null) {
                             throw new RuntimeException("dtm.yaml does not exist.");
                         }
-                        dtmProperties = new Yaml(new Constructor(DtmProperties.class)).load(new InputStreamReader(inputStream));
+                        dtmProperties =
+                                new Yaml(new Constructor(DtmProperties.class))
+                                        .load(new InputStreamReader(inputStream));
                     }
                 }
             }

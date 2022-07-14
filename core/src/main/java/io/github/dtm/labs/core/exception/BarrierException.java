@@ -20,7 +20,11 @@ public abstract class BarrierException extends RuntimeException {
         super(cause);
     }
 
-    protected BarrierException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected BarrierException(
+            String message,
+            Throwable cause,
+            boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

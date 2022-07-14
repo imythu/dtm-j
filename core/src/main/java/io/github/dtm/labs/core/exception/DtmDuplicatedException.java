@@ -3,8 +3,8 @@ package io.github.dtm.labs.core.exception;
 import io.github.dtm.labs.core.constant.GlobalTransactionType;
 
 /**
- * error of DUPLICATED for only {@link GlobalTransactionType#MSG}
- * if QueryPrepared executed before call. then DoAndSubmit return this error
+ * error of DUPLICATED for only {@link GlobalTransactionType#MSG} if QueryPrepared executed before
+ * call. then DoAndSubmit return this error
  */
 public class DtmDuplicatedException extends RuntimeException {
     public DtmDuplicatedException() {
@@ -24,7 +24,10 @@ public class DtmDuplicatedException extends RuntimeException {
     }
 
     protected DtmDuplicatedException(
-            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+            String message,
+            Throwable cause,
+            boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

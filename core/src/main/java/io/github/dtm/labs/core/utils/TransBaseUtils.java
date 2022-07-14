@@ -7,17 +7,12 @@ import io.github.dtm.labs.core.dtm.utils.HttpClients;
 import io.github.dtm.labs.core.exception.DtmFailureException;
 import io.github.dtm.labs.core.exception.DtmOngoingException;
 import io.github.dtm.labs.core.exception.PrepareException;
-import io.github.dtm.labs.core.jsonrpc.JsonrpcRequest;
 import io.github.dtm.labs.core.mode.base.TransBase;
 import jakarta.ws.rs.HttpMethod;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author imythu
@@ -26,22 +21,25 @@ public class TransBaseUtils {
 
     private TransBaseUtils() {}
 
-    /**
-     * call dtm
-     */
+    /** call dtm */
     public static void transCallDtm(TransBase t, Object body, String methodOrPath) {
         try {
             if (DtmConstant.JRPC.equals(t.getProtocol())) {
-                HttpResponse<String> response = HttpClients.getResponse(t.getDtm(), HttpMethod.POST, body);
+                HttpResponse<String> response =
+                        HttpClients.getResponse(t.getDtm(), HttpMethod.POST, body);
                 String jsonStr = response.body();
                 Map<String, Object> result = JsonUtils.toObj(jsonStr);
-                if (response.statusCode() != Response.Status.OK.getStatusCode() || result.get("error") != null) {
+                if (response.statusCode() != Response.Status.OK.getStatusCode()
+                        || result.get("error") != null) {
                     throw new PrepareException(jsonStr);
                 }
                 return;
             }
             HttpResponse<String> response =
-                    HttpClients.getResponse(String.format("%s/%s", t.getDtm(), methodOrPath), HttpMethod.POST, body);
+                    HttpClients.getResponse(
+                            String.format("%s/%s", t.getDtm(), methodOrPath),
+                            HttpMethod.POST,
+                            body);
             String bodyStr = response.body();
             if (response.statusCode() != Response.Status.OK.getStatusCode()
                     || bodyStr.contains(DtmConstant.RESULT_FAILURE)) {
@@ -52,9 +50,7 @@ public class TransBaseUtils {
         }
     }
 
-    /**
-     * request branch result
-     */
+    /** request branch result */
     public static HttpResponse<String> transRequestBranch(
             TransBase t, String method, Object body, String branchId, String op, String url) {
         if (Strings.isNullOrEmpty(url)) {
@@ -77,9 +73,11 @@ public class TransBaseUtils {
     private static void transformAndThrowException(HttpResponse<String> response) {
         int status = response.statusCode();
         String str = response.body();
-        if (status == DtmConstant.HTTP_STATUS_TOO_EARLY || str.contains(DtmConstant.RESULT_ONGOING)) {
+        if (status == DtmConstant.HTTP_STATUS_TOO_EARLY
+                || str.contains(DtmConstant.RESULT_ONGOING)) {
             throw new DtmOngoingException(String.format("%s. %s", str, DtmConstant.RESULT_ONGOING));
-        } else if (Response.Status.CONFLICT.getStatusCode() == status || str.contains(DtmConstant.RESULT_FAILURE)) {
+        } else if (Response.Status.CONFLICT.getStatusCode() == status
+                || str.contains(DtmConstant.RESULT_FAILURE)) {
             throw new DtmFailureException(String.format("%s. %s", str, DtmConstant.RESULT_FAILURE));
         } else if (status != Response.Status.OK.getStatusCode()) {
             throw new RuntimeException(str);

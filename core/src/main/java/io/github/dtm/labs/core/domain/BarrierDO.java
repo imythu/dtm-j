@@ -100,16 +100,32 @@ public class BarrierDO {
 
     @Override
     public String toString() {
-        return "BarrierDO{" + "id="
-                + id + ", transType='"
-                + transType + '\'' + ", gid='"
-                + gid + '\'' + ", branchId='"
-                + branchId + '\'' + ", op='"
-                + op + '\'' + ", barrierId='"
-                + barrierId + '\'' + ", reason='"
-                + reason + '\'' + ", createTime="
-                + createTime + ", updateTime="
-                + updateTime + '}';
+        return "BarrierDO{"
+                + "id="
+                + id
+                + ", transType='"
+                + transType
+                + '\''
+                + ", gid='"
+                + gid
+                + '\''
+                + ", branchId='"
+                + branchId
+                + '\''
+                + ", op='"
+                + op
+                + '\''
+                + ", barrierId='"
+                + barrierId
+                + '\''
+                + ", reason='"
+                + reason
+                + '\''
+                + ", createTime="
+                + createTime
+                + ", updateTime="
+                + updateTime
+                + '}';
     }
 
     @Override

@@ -2,6 +2,7 @@ package io.github.dtm.labs.core.exception;
 
 /**
  * error for returned {@link io.github.dtm.labs.core.constant.DtmConstant#RESULT_FAILURE}
+ *
  * @author imythu
  */
 public class DtmFailureException extends RuntimeException {
@@ -22,7 +23,10 @@ public class DtmFailureException extends RuntimeException {
     }
 
     protected DtmFailureException(
-            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+            String message,
+            Throwable cause,
+            boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

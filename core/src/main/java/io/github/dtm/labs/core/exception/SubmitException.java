@@ -17,7 +17,11 @@ public class SubmitException extends MsgTransactionException {
         super(cause);
     }
 
-    protected SubmitException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected SubmitException(
+            String message,
+            Throwable cause,
+            boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

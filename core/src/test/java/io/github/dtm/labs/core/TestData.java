@@ -13,8 +13,6 @@ public class TestData {
 
     @Override
     public String toString() {
-        return "TestData{" +
-                "id='" + id + '\'' +
-                '}';
+        return "TestData{" + "id='" + id + '\'' + '}';
     }
 }

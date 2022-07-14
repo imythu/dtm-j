@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 /**
  * db specific operations
+ *
  * @author imythu
  */
 public interface DbSpecial {

@@ -2,19 +2,13 @@ package io.github.dtm.labs.core.cfg;
 
 public class DbProperties {
 
-    /**
-     * JDBC URL of the database.
-     */
+    /** JDBC URL of the database. */
     private String url;
 
-    /**
-     * Login username of the database.
-     */
+    /** Login username of the database. */
     private String username;
 
-    /**
-     * Login password of the database.
-     */
+    /** Login password of the database. */
     private String password;
 
     public String getUrl() {
@@ -43,9 +37,16 @@ public class DbProperties {
 
     @Override
     public String toString() {
-        return "DbProperties{" + "url='"
-                + url + '\'' + ", username='"
-                + username + '\'' + ", password='"
-                + password + '\'' + '}';
+        return "DbProperties{"
+                + "url='"
+                + url
+                + '\''
+                + ", username='"
+                + username
+                + '\''
+                + ", password='"
+                + password
+                + '\''
+                + '}';
     }
 }

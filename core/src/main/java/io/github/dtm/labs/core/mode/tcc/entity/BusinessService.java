@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class BusinessService {
     private HttpRequest tryRequest;
-    private String  confirmRequest;
-    private String  cancelRequest;
+    private String confirmRequest;
+    private String cancelRequest;
     private String confirmAndCancelRequestData;
 }

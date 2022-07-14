@@ -22,7 +22,8 @@ public class DbUtils {
     private static final Logger logger = LoggerFactory.getLogger(DbUtils.class);
     private static volatile DataSource dataSource;
 
-    private static final ConcurrentMap<String, DbSpecial> DB_SPECIAL_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<String, DbSpecial> DB_SPECIAL_MAP =
+            new ConcurrentHashMap<>();
 
     private DbUtils() {}
 

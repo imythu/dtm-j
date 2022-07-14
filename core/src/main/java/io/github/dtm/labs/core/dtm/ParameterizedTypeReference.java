@@ -10,9 +10,9 @@ public abstract class ParameterizedTypeReference<T> {
 
     private final Type type;
 
-
     protected ParameterizedTypeReference() {
-        Class<?> parameterizedTypeReferenceSubclass = findParameterizedTypeReferenceSubclass(getClass());
+        Class<?> parameterizedTypeReferenceSubclass =
+                findParameterizedTypeReferenceSubclass(getClass());
         Type type = parameterizedTypeReferenceSubclass.getGenericSuperclass();
         if (!(type instanceof ParameterizedType)) {
             throw new IllegalArgumentException("Type must be a parameterized type");
@@ -29,15 +29,15 @@ public abstract class ParameterizedTypeReference<T> {
         this.type = type;
     }
 
-
     public Type getType() {
         return this.type;
     }
 
     @Override
-    public boolean equals( Object other) {
-        return (this == other || (other instanceof ParameterizedTypeReference &&
-                this.type.equals(((ParameterizedTypeReference<?>) other).type)));
+    public boolean equals(Object other) {
+        return (this == other
+                || (other instanceof ParameterizedTypeReference
+                        && this.type.equals(((ParameterizedTypeReference<?>) other).type)));
     }
 
     @Override
@@ -50,32 +50,27 @@ public abstract class ParameterizedTypeReference<T> {
         return "ParameterizedTypeReference<" + this.type + ">";
     }
 
-
     /**
      * Build a {@code ParameterizedTypeReference} wrapping the given type.
-     * @param type a generic type (possibly obtained via reflection,
-     * e.g. from {@link java.lang.reflect.Method#getGenericReturnType()})
-     * @return a corresponding reference which may be passed into
-     * {@code ParameterizedTypeReference}-accepting methods
+     *
+     * @param type a generic type (possibly obtained via reflection, e.g. from {@link
+     *     java.lang.reflect.Method#getGenericReturnType()})
+     * @return a corresponding reference which may be passed into {@code
+     *     ParameterizedTypeReference}-accepting methods
      * @since 4.3.12
      */
     public static <T> ParameterizedTypeReference<T> forType(Type type) {
-        return new ParameterizedTypeReference<T>(type) {
-        };
+        return new ParameterizedTypeReference<T>(type) {};
     }
 
     private static Class<?> findParameterizedTypeReferenceSubclass(Class<?> child) {
         Class<?> parent = child.getSuperclass();
         if (Object.class == parent) {
             throw new IllegalStateException("Expected ParameterizedTypeReference superclass");
-        }
-        else if (ParameterizedTypeReference.class == parent) {
+        } else if (ParameterizedTypeReference.class == parent) {
             return child;
-        }
-        else {
+        } else {
             return findParameterizedTypeReferenceSubclass(parent);
         }
     }
-
 }
-

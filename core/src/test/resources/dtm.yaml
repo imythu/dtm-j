@@ -1,6 +1,8 @@
 
-server:
+httpServer:
   - "host.docker.internal:36789"
+grpcServer:
+  - "host.docker.internal:36790"
 db:
   url: mysql:jdbc://test.inusha.cn:3306/dtm_barrier
   username: root

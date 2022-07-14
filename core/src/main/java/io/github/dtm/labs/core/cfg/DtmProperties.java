@@ -2,21 +2,29 @@ package io.github.dtm.labs.core.cfg;
 
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
 /**
  * @author imythu
  */
 public class DtmProperties {
-    private List<String> server = new ArrayList<>(0);
+    private List<String> httpServer = new ArrayList<>(0);
+    private List<String> grpcServer = new ArrayList<>(0);
     private DbProperties db;
 
-    public List<String> getServer() {
-        return server;
+    public List<String> getHttpServer() {
+        return httpServer;
     }
 
-    public void setServer(List<String> server) {
-        this.server = server;
+    public void setHttpServer(List<String> httpServer) {
+        this.httpServer = httpServer;
+    }
+
+    public List<String> getGrpcServer() {
+        return grpcServer;
+    }
+
+    public void setGrpcServer(List<String> grpcServer) {
+        this.grpcServer = grpcServer;
     }
 
     public DbProperties getDb() {
@@ -30,7 +38,8 @@ public class DtmProperties {
     @Override
     public String toString() {
         return "DtmProperties{" +
-                "server=" + server +
+                "httpServer=" + httpServer +
+                ", grpcServer=" + grpcServer +
                 ", db=" + db +
                 '}';
     }

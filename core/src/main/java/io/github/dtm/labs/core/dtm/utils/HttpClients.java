@@ -6,27 +6,27 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
-import java.net.http.HttpRequest.BodyPublishers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpClients {
     private static final Logger logger = LoggerFactory.getLogger(HttpClients.class);
 
     private HttpClients() {}
 
-    private static final Gson gson = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create();
+    private static final Gson gson =
+            new GsonBuilder()
+                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                    .create();
     private static final HttpClient client = HttpClient.newBuilder().build();
 
     public static <T> T request(String api, String method, Object body, Class<T> responseClass) {
@@ -45,14 +45,16 @@ public class HttpClients {
 
     public static HttpResponse<String> getResponse(
             String api, String method, Object body, Map<String, List<String>> headers) {
-        HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(api))
-                .method(method, HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .version(HttpClient.Version.HTTP_1_1);
-        headers.forEach((name, value) -> {
-            builder.header(name, String.join(",", value));
-        });
+        HttpRequest.Builder builder =
+                HttpRequest.newBuilder()
+                        .uri(URI.create(api))
+                        .method(method, HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .version(HttpClient.Version.HTTP_1_1);
+        headers.forEach(
+                (name, value) -> {
+                    builder.header(name, String.join(",", value));
+                });
         HttpRequest httpRequest = builder.build();
         return getResponse(httpRequest);
     }
@@ -62,7 +64,8 @@ public class HttpClients {
         String method = httpRequest.method();
         String body = httpRequest.bodyPublisher().orElse(BodyPublishers.noBody()).toString();
         try {
-            HttpResponse<String> response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response =
+                    client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             int statusCode = response.statusCode();
             if (200 <= statusCode && statusCode < 300) {
                 logger.debug(

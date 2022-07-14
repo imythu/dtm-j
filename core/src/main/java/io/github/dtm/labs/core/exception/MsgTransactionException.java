@@ -21,7 +21,10 @@ public abstract class MsgTransactionException extends RuntimeException {
     }
 
     protected MsgTransactionException(
-            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+            String message,
+            Throwable cause,
+            boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

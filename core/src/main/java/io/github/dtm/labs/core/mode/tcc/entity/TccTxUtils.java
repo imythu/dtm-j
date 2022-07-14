@@ -7,7 +7,7 @@ import io.github.dtm.labs.core.mode.tcc.impl.HttpTccGlobalTx;
  * @author imyth
  */
 public class TccTxUtils {
-    private TccTxUtils(){}
+    private TccTxUtils() {}
 
     public static TccGlobalTx openHttpTx() {
         return new HttpTccGlobalTx();

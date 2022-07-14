@@ -56,27 +56,40 @@ public class HttpMsgTransaction implements MsgTransaction<Msg> {
     }
 
     @Override
-    public void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc) throws DoAndSubmitDbException {
-        doAndSubmit(queryPrepared, branchBarrier -> {
-            try {
-                DbUtils.getConnection().getMetaData().getDatabaseProductName();
-                branchBarrier.callWithDb(DbUtils.getConnection(), barrierBusiFunc);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
+    public void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc)
+            throws DoAndSubmitDbException {
+        doAndSubmit(
+                queryPrepared,
+                branchBarrier -> {
+                    try {
+                        DbUtils.getConnection().getMetaData().getDatabaseProductName();
+                        branchBarrier.callWithDb(DbUtils.getConnection(), barrierBusiFunc);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 
     @Override
-    public void doAndSubmit(String queryPrepared, Consumer<BranchBarrier> busiCall) throws DoAndSubmitException {
+    public void doAndSubmit(String queryPrepared, Consumer<BranchBarrier> busiCall)
+            throws DoAndSubmitException {
         try {
-            BranchBarrier branchBarrier = BranchBarrier.from(
-                    msg.getTransType(), msg.getGid(), msg.getBranchIDGen().getBranchID(), msg.getOp());
+            BranchBarrier branchBarrier =
+                    BranchBarrier.from(
+                            msg.getTransType(),
+                            msg.getGid(),
+                            msg.getBranchIDGen().getBranchID(),
+                            msg.getOp());
             prepare(queryPrepared);
             Exception busiEx;
             Exception transRequestBranchEx = null;
             TransBaseUtils.transRequestBranch(
-                    msg, HttpMethod.GET, null, msg.getBranchIDGen().getBranchID(), msg.getOp(), queryPrepared);
+                    msg,
+                    HttpMethod.GET,
+                    null,
+                    msg.getBranchIDGen().getBranchID(),
+                    msg.getOp(),
+                    queryPrepared);
             try {
                 busiCall.accept(branchBarrier);
                 submit();
@@ -95,7 +108,8 @@ public class HttpMsgTransaction implements MsgTransaction<Msg> {
                         transRequestBranchEx = branchEx;
                     }
                 }
-                if (busiEx instanceof DtmFailureException || transRequestBranchEx instanceof DtmFailureException) {
+                if (busiEx instanceof DtmFailureException
+                        || transRequestBranchEx instanceof DtmFailureException) {
                     TransBaseUtils.transCallDtm(msg, msg, DtmMethod.ABORT);
                 } else {
                     throw e;

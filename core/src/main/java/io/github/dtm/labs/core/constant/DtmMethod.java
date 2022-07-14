@@ -1,8 +1,8 @@
 package io.github.dtm.labs.core.constant;
 
 /**
- * for jsonrpc: method name
- * for http: api pathtop
+ * for jsonrpc: method name for http: api pathtop
+ *
  * @author imythu
  */
 public interface DtmMethod {

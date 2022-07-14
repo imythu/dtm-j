@@ -14,21 +14,26 @@ import java.util.concurrent.CountDownLatch;
  * @author zhuhf
  */
 public class TestAction {
-    private TestAction(){}
+    private TestAction() {}
 
-
-    public static String test(String id, TccGlobalTx tccGlobalTx, CountDownLatch blocker, int port) throws InterruptedException {
+    public static String test(String id, TccGlobalTx tccGlobalTx, CountDownLatch blocker, int port)
+            throws InterruptedException {
         tccGlobalTx.prepare();
         String prefix = "http://host.docker.internal:" + port;
         String body = HttpServer.gson.toJson(new TestData(id));
-        boolean tryAndRegistryBranchTx = tccGlobalTx.tryAndRegistryBranchTx(new BusinessService()
-                .setConfirmRequest(prefix + "/confirm")
-                .setCancelRequest(prefix + "/cancel")
-                .setTryRequest(HttpRequest.newBuilder()
-                        .uri(URI.create(prefix + "/try"))
-                        .method(HttpMethod.POST, BodyPublishers.ofString(body))
-                        .build())
-                .setConfirmAndCancelRequestData(body));
+        boolean tryAndRegistryBranchTx =
+                tccGlobalTx.tryAndRegistryBranchTx(
+                        new BusinessService()
+                                .setConfirmRequest(prefix + "/confirm")
+                                .setCancelRequest(prefix + "/cancel")
+                                .setTryRequest(
+                                        HttpRequest.newBuilder()
+                                                .uri(URI.create(prefix + "/try"))
+                                                .method(
+                                                        HttpMethod.POST,
+                                                        BodyPublishers.ofString(body))
+                                                .build())
+                                .setConfirmAndCancelRequestData(body));
         if (!tryAndRegistryBranchTx) {
             tccGlobalTx.rollback();
             blocker.await();

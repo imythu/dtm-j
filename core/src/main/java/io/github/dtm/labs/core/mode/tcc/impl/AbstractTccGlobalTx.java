@@ -25,6 +25,7 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
 
     /**
      * 向 dtm 注册分支事务
+     *
      * @param registerBranchRequest request body
      * @return 成功返回 true，否则返回 false
      */
@@ -32,6 +33,7 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
 
     /**
      * 向 dtm prepare 事务
+     *
      * @param prepareRequest request body
      * @return 成功返回 true，否则返回 false
      */
@@ -39,6 +41,7 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
 
     /**
      * 向 dtm 提交事务
+     *
      * @param submitRequest request body
      * @return 成功返回 true，否则返回 false
      */
@@ -46,6 +49,7 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
 
     /**
      * 向 dtm 回滚事务
+     *
      * @param abortRequest
      * @return 成功返回 true，否则返回 false
      */
@@ -53,6 +57,7 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
 
     /**
      * 向 dtm 请求 gid
+     *
      * @return gid
      */
     protected abstract String newGid();
@@ -60,7 +65,8 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
     @Override
     public boolean tryAndRegistryBranchTx(BusinessService branchTx) {
         if (!prepared) {
-            throw new RuntimeException("The start() method must be called before registering a branch transaction");
+            throw new RuntimeException(
+                    "The start() method must be called before registering a branch transaction");
         }
 
         RegisterBranchRequest registerBranchRequest = new RegisterBranchRequest();
@@ -79,7 +85,10 @@ public abstract class AbstractTccGlobalTx implements TccGlobalTx {
         try {
             HttpResponse<String> tryRes = HttpClients.getResponse(branchTx.getTryRequest());
             if (200 <= tryRes.statusCode() && tryRes.statusCode() < 300) {
-                logger.info("register branch [gid: {}, branchId: {}] successful", gid, registerBranchRequest.getBranchId());
+                logger.info(
+                        "register branch [gid: {}, branchId: {}] successful",
+                        gid,
+                        registerBranchRequest.getBranchId());
                 return true;
             }
         } catch (Exception ignored) {

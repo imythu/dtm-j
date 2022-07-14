@@ -14,6 +14,8 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,24 +27,34 @@ class JsonrpcTccGlobalTxTest {
     private static final Logger logger = LoggerFactory.getLogger(JsonrpcTccGlobalTxTest.class);
     private static final int port = 12345;
     private static final Map<String, CountDownLatch> blockerMap = new ConcurrentHashMap<>(8);
+    private static final HttpServer httpServer = new HttpServer();
 
-    static {
-        HttpServer httpServer = new HttpServer();
+    @BeforeAll
+    public static void start() {
         httpServer.start(port);
-        Function<Req, Res<Object>> handler = req -> {
-            TestData map = HttpServer.gson.fromJson(req.getBody(), TestData.class);
-            logger.info("{} received: {}", req.getPath(), map);
-            blockerMap.computeIfPresent(map.id, (s, countDownLatch) -> {
-                countDownLatch.countDown();
-                return countDownLatch;
-            });
-            return new Res<>(
-                    Objects.equals(req.getPath(), "/try") && map.id.contains("rollback") ? Status.CONFLICT : Status.OK,
-                    map);
-        };
+        Function<Req, Res<Object>> handler =
+                req -> {
+                    TestData map = HttpServer.gson.fromJson(req.getBody(), TestData.class);
+                    logger.info("{} received: {}", req.getPath(), map);
+                    blockerMap.computeIfPresent(
+                            map.id,
+                            (s, countDownLatch) -> {
+                                countDownLatch.countDown();
+                                return countDownLatch;
+                            });
+                    return new Res<>(
+                            Objects.equals(req.getPath(), "/try") && map.id.contains("rollback")
+                                    ? Status.CONFLICT
+                                    : Status.OK,
+                            map);
+                };
         httpServer.addJsonHandler("/try", handler);
         httpServer.addJsonHandler("/confirm", handler);
         httpServer.addJsonHandler("/cancel", handler);
+    }
+    @AfterAll
+    public static void stop() {
+        httpServer.stop();
     }
 
     @Test
@@ -51,7 +63,9 @@ class JsonrpcTccGlobalTxTest {
         logger.info("submitId: {}", submitId);
         CountDownLatch blocker = new CountDownLatch(1);
         blockerMap.put(submitId, blocker);
-        assertEquals(HttpTccGlobalTxTest.submitSuccess, test(submitId, new JsonrpcTccGlobalTx(), blocker, port));
+        assertEquals(
+                HttpTccGlobalTxTest.submitSuccess,
+                test(submitId, new JsonrpcTccGlobalTx(), blocker, port));
     }
 
     @Test
@@ -60,6 +74,8 @@ class JsonrpcTccGlobalTxTest {
         logger.info("rollbackId: {}", rollbackId);
         CountDownLatch blocker = new CountDownLatch(1);
         blockerMap.put(rollbackId, blocker);
-        assertEquals(HttpTccGlobalTxTest.rollbackSuccess, test(rollbackId, new JsonrpcTccGlobalTx(), blocker, port));
+        assertEquals(
+                HttpTccGlobalTxTest.rollbackSuccess,
+                test(rollbackId, new JsonrpcTccGlobalTx(), blocker, port));
     }
 }

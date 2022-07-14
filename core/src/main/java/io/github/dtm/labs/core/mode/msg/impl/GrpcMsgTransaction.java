@@ -31,10 +31,12 @@ public class GrpcMsgTransaction implements MsgTransaction<Msg> {
     public void submit() throws SubmitException {}
 
     @Override
-    public void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc) throws DoAndSubmitDbException {}
+    public void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc)
+            throws DoAndSubmitDbException {}
 
     @Override
-    public void doAndSubmit(String queryPrepared, Consumer<BranchBarrier> busiCall) throws DoAndSubmitException {}
+    public void doAndSubmit(String queryPrepared, Consumer<BranchBarrier> busiCall)
+            throws DoAndSubmitException {}
 
     @Override
     public void buildCustomOptions() {

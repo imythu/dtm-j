@@ -20,7 +20,8 @@ public class MySQLSpecial extends AbstractDbSpecial {
             "insert ignore into barrier (trans_type, gid, branch_id, op, barrier_id, reason) values (?,?,?,?,?,?)";
 
     @Override
-    public int executeInsertIgnoreSql(Connection connection, BarrierDO barrierDO) throws SQLException {
+    public int executeInsertIgnoreSql(Connection connection, BarrierDO barrierDO)
+            throws SQLException {
         PreparedStatement preparedStatement = getOrCreate(connection, TEMPLATE_SQL);
         preparedStatement.setString(1, barrierDO.getTransType());
         preparedStatement.setString(2, barrierDO.getGid());

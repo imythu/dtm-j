@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * json rpc 2.0 protocol request
+ *
  * @author imythu
  */
 public class JsonrpcRequest<T> implements Serializable {
@@ -27,11 +28,19 @@ public class JsonrpcRequest<T> implements Serializable {
 
     @Override
     public String toString() {
-        return "Request{" + "jsonrpc='"
-                + jsonrpc + '\'' + ", method='"
-                + method + '\'' + ", id='"
-                + id + '\'' + ", params="
-                + params + '}';
+        return "Request{"
+                + "jsonrpc='"
+                + jsonrpc
+                + '\''
+                + ", method='"
+                + method
+                + '\''
+                + ", id='"
+                + id
+                + '\''
+                + ", params="
+                + params
+                + '}';
     }
 
     public static class Builder<T> {
@@ -62,7 +71,16 @@ public class JsonrpcRequest<T> implements Serializable {
 
         @Override
         public String toString() {
-            return "Builder{" + "method='" + method + '\'' + ", id='" + id + '\'' + ", params=" + params + '}';
+            return "Builder{"
+                    + "method='"
+                    + method
+                    + '\''
+                    + ", id='"
+                    + id
+                    + '\''
+                    + ", params="
+                    + params
+                    + '}';
         }
     }
 }

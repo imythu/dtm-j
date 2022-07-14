@@ -23,11 +23,11 @@ import org.slf4j.LoggerFactory;
 /**
  * @author zhuhf
  */
-class HttpTccGlobalTxTest {
-    private static final Logger logger = LoggerFactory.getLogger(HttpTccGlobalTxTest.class);
+class GrpcTccGlobalTxTest {
+    private static final Logger logger = LoggerFactory.getLogger(GrpcTccGlobalTxTest.class);
     static final String submitSuccess = "submitSuccess";
     static final String rollbackSuccess = "rollbackSuccess";
-    private static final int port = 12346;
+    private static final int port = 12347;
     private static final Map<String, CountDownLatch> blockerMap = new ConcurrentHashMap<>(8);
     private static final HttpServer httpServer = new HttpServer();
 
@@ -67,8 +67,8 @@ class HttpTccGlobalTxTest {
         logger.info("submitId: {}", submitId);
         blockerMap.put(submitId, blocker);
         assertEquals(
-                HttpTccGlobalTxTest.submitSuccess,
-                test(submitId, new HttpTccGlobalTx(), blocker, port));
+                GrpcTccGlobalTxTest.submitSuccess,
+                test(submitId, new GrpcTccGlobalTx(), blocker, port));
     }
 
     @Test
@@ -78,7 +78,7 @@ class HttpTccGlobalTxTest {
         CountDownLatch blocker = new CountDownLatch(1);
         blockerMap.put(rollbackId, blocker);
         assertEquals(
-                HttpTccGlobalTxTest.rollbackSuccess,
-                test(rollbackId, new HttpTccGlobalTx(), blocker, port));
+                GrpcTccGlobalTxTest.rollbackSuccess,
+                test(rollbackId, new GrpcTccGlobalTx(), blocker, port));
     }
 }
