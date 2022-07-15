@@ -19,6 +19,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>11</java.version>
     <slf4j.version>1.7.36</slf4j.version>
+    <grpc.version>1.47.0</grpc.version>
+    <protobuf.version>3.21.2</protobuf.version>
   </properties>
 
   <dependencyManagement>
@@ -50,8 +52,24 @@
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
-        <artifactId>netty-codec-http2</artifactId>
+        <artifactId>netty-bom</artifactId>
         <version>4.1.79.Final</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-bom</artifactId>
+        <version>${protobuf.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-bom</artifactId>
+        <version>${grpc.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
       </dependency>
     </dependencies>
   </dependencyManagement>
