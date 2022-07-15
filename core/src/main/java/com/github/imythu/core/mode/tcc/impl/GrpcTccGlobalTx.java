@@ -5,17 +5,13 @@ import com.github.imythu.core.dtm.req.AbortRequest;
 import com.github.imythu.core.dtm.req.PrepareRequest;
 import com.github.imythu.core.dtm.req.SubmitRequest;
 import com.github.imythu.core.dtm.req.tcc.RegisterBranchRequest;
-import com.github.imythu.core.mode.tcc.impl.grpc.RandomNameResolver;
+import com.github.imythu.core.mode.tcc.impl.grpc.MultiAddressNameResolverProvider;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.NameResolver;
-import io.grpc.NameResolver.Args;
-import io.grpc.NameResolverProvider;
 import io.grpc.NameResolverRegistry;
 import io.grpc.StatusRuntimeException;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,31 +31,11 @@ public class GrpcTccGlobalTx extends AbstractTccGlobalTx {
                 if (dtmServiceStub == null) {
                     String scheme = "listserver";
                     NameResolverRegistry.getDefaultRegistry()
-                            .register(
-                                    new NameResolverProvider() {
-                                        @Override
-                                        protected boolean isAvailable() {
-                                            return true;
-                                        }
-
-                                        @Override
-                                        protected int priority() {
-                                            return 5;
-                                        }
-
-                                        @Override
-                                        public NameResolver newNameResolver(
-                                                URI targetUri, Args args) {
-                                            return new RandomNameResolver(targetUri);
-                                        }
-
-                                        @Override
-                                        public String getDefaultScheme() {
-                                            return scheme;
-                                        }
-                                    });
+                            .register(new MultiAddressNameResolverProvider());
                     ManagedChannel channel =
-                            ManagedChannelBuilder.forTarget(scheme + "://localhost:36790")
+                            ManagedChannelBuilder.forTarget(
+                                            MultiAddressNameResolverProvider.MULTI_ADDRESS_SCHEME
+                                                    + "://multiaddress")
                                     .usePlaintext()
                                     .enableRetry()
                                     .build();
@@ -142,7 +118,7 @@ public class GrpcTccGlobalTx extends AbstractTccGlobalTx {
     }
 
     @FunctionalInterface
-    private static interface Executor<T> {
+    private interface Executor<T> {
 
         /**
          * execute
