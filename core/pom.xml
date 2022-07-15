@@ -63,13 +63,8 @@
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
-      <artifactId>grpc-netty-shaded</artifactId>
+      <artifactId>grpc-netty</artifactId>
       <version>${grpc.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-codec-http2</artifactId>
-      <version>4.1.79.Final</version>
     </dependency>
     <dependency>
       <groupId>javax.annotation</groupId>
@@ -140,7 +135,7 @@
         </configuration>
         <executions>
           <execution>
-            <phase>validate</phase>
+            <phase>generate-sources</phase>
             <goals>
               <goal>compile</goal>
               <goal>compile-custom</goal>
