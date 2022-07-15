@@ -4,8 +4,10 @@ import com.github.imythu.core.cfg.CfgHolder;
 import io.grpc.Attributes;
 import io.grpc.EquivalentAddressGroup;
 import io.grpc.NameResolver;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,13 +25,23 @@ public class RandomNameResolver extends NameResolver {
     public void start(Listener2 listener) {
         List<EquivalentAddressGroup> collect =
                 CfgHolder.getDtmProperties().getGrpcServer().stream()
-                        .map(
+                        .flatMap(
                                 s -> {
                                     String[] hostAndPort = s.split(":");
-                                    return new EquivalentAddressGroup(
-                                            InetSocketAddress.createUnresolved(
-                                                    hostAndPort[0],
-                                                    Integer.parseInt(hostAndPort[1])));
+                                    int port = Integer.parseInt(hostAndPort[1]);
+                                    try {
+                                        return resolveAddress(hostAndPort[0]).stream()
+                                                .map(
+                                                        inetAddress ->
+                                                                new EquivalentAddressGroup(
+                                                                        InetSocketAddress
+                                                                                .createUnresolved(
+                                                                                        inetAddress
+                                                                                                .getHostAddress(),
+                                                                                        port)));
+                                    } catch (UnknownHostException e) {
+                                        throw new RuntimeException(e);
+                                    }
                                 })
                         .collect(Collectors.toList());
         listener.onResult(
@@ -46,4 +58,8 @@ public class RandomNameResolver extends NameResolver {
 
     @Override
     public void shutdown() {}
+
+    public List<InetAddress> resolveAddress(String host) throws UnknownHostException {
+        return List.of(InetAddress.getAllByName(host));
+    }
 }

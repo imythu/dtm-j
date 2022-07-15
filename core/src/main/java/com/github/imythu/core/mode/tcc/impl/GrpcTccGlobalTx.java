@@ -59,7 +59,7 @@ public class GrpcTccGlobalTx extends AbstractTccGlobalTx {
                                         }
                                     });
                     ManagedChannel channel =
-                            ManagedChannelBuilder.forTarget(scheme + "://grpc-dtm-server")
+                            ManagedChannelBuilder.forTarget(scheme + "://localhost:36790")
                                     .usePlaintext()
                                     .enableRetry()
                                     .build();
