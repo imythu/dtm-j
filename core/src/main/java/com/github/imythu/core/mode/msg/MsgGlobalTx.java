@@ -11,5 +11,9 @@ public interface MsgGlobalTx {
      */
     void prepare() throws PrepareException;
 
+    void addStep();
+
+    void
+
 
 }

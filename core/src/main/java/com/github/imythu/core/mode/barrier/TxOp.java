@@ -1,4 +1,4 @@
-package com.github.imythu.core.mode;
+package com.github.imythu.core.mode.barrier;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -6,12 +6,19 @@ import java.sql.SQLException;
 /**
  * @author imythu
  */
-public class TransactionOperate {
+public class TxOp {
     private final Connection connection;
 
-    public TransactionOperate(Connection connection) throws SQLException {
+    public TxOp(Connection connection) throws SQLException {
         this.connection = connection;
-        this.connection.setAutoCommit(false);
+    }
+
+    public void beginTx() {
+        try {
+            this.connection.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void commit() throws SQLException {
