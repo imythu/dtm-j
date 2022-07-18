@@ -10,6 +10,8 @@ import com.github.imythu.core.utils.DbUtils;
 import com.github.imythu.core.utils.ExceptionUtils;
 import com.google.common.base.Strings;
 import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,11 +20,22 @@ import org.slf4j.LoggerFactory;
  */
 public class BranchBarrier {
     private static final Logger logger = LoggerFactory.getLogger(BranchBarrier.class);
+    private static final Map<String, String> opMap = new HashMap<>(3);
+
+    static {
+        // tcc
+        opMap.put(DtmConstant.OP_CANCEL, DtmConstant.OP_TRY);
+        // saga
+        opMap.put(DtmConstant.OP_COMPENSATE, DtmConstant.OP_ACTION);
+        // workflow
+        opMap.put(DtmConstant.OP_ROLLBACK, DtmConstant.OP_ACTION);
+    }
+
     private String transType;
     private String gid;
-    private String branchID;
+    private String branchId;
     private String op;
-    private int barrierID;
+    private int barrierId;
 
     public static BranchBarrier from(String transType, String gid, String branchId, String op) {
         if (Strings.isNullOrEmpty(transType)
@@ -32,63 +45,18 @@ public class BranchBarrier {
             throw new IllegalArgumentException("param cannot is null or empty");
         }
         BranchBarrier branchBarrier = new BranchBarrier();
-        branchBarrier.setTransType(transType);
-        branchBarrier.setGid(gid);
-        branchBarrier.setBranchID(branchId);
-        branchBarrier.setOp(op);
+        branchBarrier.transType = transType;
+        branchBarrier.gid = gid;
+        branchBarrier.branchId = branchId;
+        branchBarrier.op = op;
         return branchBarrier;
     }
 
-    public String getTransType() {
-        return transType;
-    }
-
-    public BranchBarrier setTransType(String transType) {
-        this.transType = transType;
-        return this;
-    }
-
-    public String getGid() {
-        return gid;
-    }
-
-    public BranchBarrier setGid(String gid) {
-        this.gid = gid;
-        return this;
-    }
-
-    public String getBranchID() {
-        return branchID;
-    }
-
-    public BranchBarrier setBranchID(String branchID) {
-        this.branchID = branchID;
-        return this;
-    }
-
-    public String getOp() {
-        return op;
-    }
-
-    public BranchBarrier setOp(String op) {
-        this.op = op;
-        return this;
-    }
-
-    public int getBarrierID() {
-        return barrierID;
-    }
-
-    public BranchBarrier setBarrierID(int barrierID) {
-        this.barrierID = barrierID;
-        return this;
-    }
-
-    /** the same as {@link #call(Connection, BarrierBusiFunc)} */
-    public Error callWithDb(Connection connection, BarrierBusiFunc barrierBusiFunc) {
+    /** the same as {@link #call(Connection, BusinessExecutor)} */
+    public Error callWithDb(Connection connection, BusinessExecutor businessExecutor) {
         Error error = ExceptionUtils.execute(() -> connection.setAutoCommit(false));
         if (error == null) {
-            error = call(connection, barrierBusiFunc);
+            error = call(connection, businessExecutor);
         }
         return error;
     }
@@ -98,19 +66,13 @@ public class BranchBarrier {
      * href="https://en.dtm.pub/practice/barrier.html">https://en.dtm.pub/practice/barrier.html</a>
      *
      * @param connection local transaction connection
-     * @param barrierBusiFunc busi func
+     * @param businessExecutor busi func
      */
-    public Error call(Connection connection, BarrierBusiFunc barrierBusiFunc) {
-        barrierID++;
-        String bid = String.format("%02d", barrierID);
-        String originOp = null;
-        if (DtmConstant.OP_CANCEL.equals(op)) {
-            originOp = DtmConstant.OP_TRY;
-        } else if (DtmConstant.OP_COMPENSATE.equals(op)) {
-            originOp = DtmConstant.OP_ACTION;
-        }
+    public Error call(Connection connection, BusinessExecutor businessExecutor) {
+        barrierId++;
+        String bid = String.format("%02d", barrierId);
+        String originOp = opMap.get(op);
 
-        String finalOriginOp = originOp;
         ReturnVal<Integer> originVal =
                 ExceptionUtils.execute(
                         () ->
@@ -120,8 +82,8 @@ public class BranchBarrier {
                                                 new BarrierDO()
                                                         .setTransType(transType)
                                                         .setGid(gid)
-                                                        .setBranchId(branchID)
-                                                        .setOp(finalOriginOp)
+                                                        .setBranchId(branchId)
+                                                        .setOp(originOp)
                                                         .setBarrierId(bid)
                                                         .setReason(op)));
         ReturnVal<Integer> currentVal =
@@ -133,15 +95,18 @@ public class BranchBarrier {
                                                 new BarrierDO()
                                                         .setTransType(transType)
                                                         .setGid(gid)
-                                                        .setBranchId(branchID)
+                                                        .setBranchId(branchId)
                                                         .setOp(op)
                                                         .setBarrierId(bid)
                                                         .setReason(op)));
         int originAffected = originVal.getValue();
         Error oerr = originVal.getErr();
+
         int currentAffected = currentVal.getValue();
         Error rerr = currentVal.getErr();
+
         logger.debug("originAffected: {} currentAffected: {}", originAffected, currentAffected);
+
         // for msg's DoAndSubmit, repeated insert should be rejected.
         if (rerr == null && DtmConstant.MSG_DO_OP.equals(op) && currentAffected == 0) {
             return ErrorConstant.ERR_DUPLICATED;
@@ -151,13 +116,16 @@ public class BranchBarrier {
             rerr = oerr;
         }
         // null compensate
-        boolean isCancelOrComPensateOp =
-                DtmConstant.OP_CANCEL.equals(op) || DtmConstant.OP_COMPENSATE.equals(op);
-        if (isCancelOrComPensateOp && originAffected > 0) {
+        boolean judgeOp =
+                DtmConstant.OP_CANCEL.equals(this.op) || DtmConstant.OP_COMPENSATE.equals(this.op) || DtmConstant.OP_ROLLBACK.equals(
+                        this.op);
+        if (judgeOp && originAffected > 0) {
+            // repeated request or dangled request
             currentAffected = 0;
+            return rerr;
         }
         if (rerr == null) {
-            rerr = barrierBusiFunc.doBusi(new Transaction(connection));
+            rerr = businessExecutor.doBusi(new Transaction(connection));
         }
         return rerr;
     }
@@ -172,13 +140,13 @@ public class BranchBarrier {
                 + gid
                 + '\''
                 + ", branchID='"
-                + branchID
+                + branchId
                 + '\''
                 + ", op='"
                 + op
                 + '\''
                 + ", barrierID="
-                + barrierID
+                + barrierId
                 + '}';
     }
 }

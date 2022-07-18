@@ -3,7 +3,7 @@ package com.github.imythu.core.exception;
 /**
  * @author imythu
  */
-public abstract class BarrierException extends RuntimeException {
+public class BarrierException extends RuntimeException {
     public BarrierException() {
         super();
     }

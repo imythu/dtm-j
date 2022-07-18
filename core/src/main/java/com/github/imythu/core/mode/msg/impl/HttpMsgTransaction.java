@@ -1,6 +1,6 @@
 package com.github.imythu.core.mode.msg.impl;
 
-import com.github.imythu.core.barrier.BarrierBusiFunc;
+import com.github.imythu.core.barrier.BusinessExecutor;
 import com.github.imythu.core.barrier.BranchBarrier;
 import com.github.imythu.core.constant.DtmMethod;
 import com.github.imythu.core.exception.DoAndSubmitDbException;
@@ -56,14 +56,14 @@ public class HttpMsgTransaction implements MsgTransaction<Msg> {
     }
 
     @Override
-    public void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc)
+    public void doAndSubmitDb(String queryPrepared, BusinessExecutor businessExecutor)
             throws DoAndSubmitDbException {
         doAndSubmit(
                 queryPrepared,
                 branchBarrier -> {
                     try {
                         DbUtils.getConnection().getMetaData().getDatabaseProductName();
-                        branchBarrier.callWithDb(DbUtils.getConnection(), barrierBusiFunc);
+                        branchBarrier.callWithDb(DbUtils.getConnection(), businessExecutor);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     }

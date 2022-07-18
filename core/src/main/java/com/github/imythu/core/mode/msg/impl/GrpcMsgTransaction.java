@@ -1,6 +1,6 @@
 package com.github.imythu.core.mode.msg.impl;
 
-import com.github.imythu.core.barrier.BarrierBusiFunc;
+import com.github.imythu.core.barrier.BusinessExecutor;
 import com.github.imythu.core.barrier.BranchBarrier;
 import com.github.imythu.core.exception.DoAndSubmitDbException;
 import com.github.imythu.core.exception.DoAndSubmitException;
@@ -31,7 +31,7 @@ public class GrpcMsgTransaction implements MsgTransaction<Msg> {
     public void submit() throws SubmitException {}
 
     @Override
-    public void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc)
+    public void doAndSubmitDb(String queryPrepared, BusinessExecutor businessExecutor)
             throws DoAndSubmitDbException {}
 
     @Override

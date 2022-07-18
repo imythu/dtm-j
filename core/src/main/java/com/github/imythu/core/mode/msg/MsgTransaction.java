@@ -1,6 +1,6 @@
 package com.github.imythu.core.mode.msg;
 
-import com.github.imythu.core.barrier.BarrierBusiFunc;
+import com.github.imythu.core.barrier.BusinessExecutor;
 import com.github.imythu.core.barrier.BranchBarrier;
 import com.github.imythu.core.exception.DoAndSubmitDbException;
 import com.github.imythu.core.exception.DoAndSubmitException;
@@ -49,10 +49,10 @@ public interface MsgTransaction<T extends Msg> {
      * short method for Do on db type. please see {@link #doAndSubmit}
      *
      * @param queryPrepared
-     * @param barrierBusiFunc
+     * @param businessExecutor
      * @throws DoAndSubmitDbException
      */
-    void doAndSubmitDb(String queryPrepared, BarrierBusiFunc barrierBusiFunc)
+    void doAndSubmitDb(String queryPrepared, BusinessExecutor businessExecutor)
             throws DoAndSubmitDbException;
 
     /**

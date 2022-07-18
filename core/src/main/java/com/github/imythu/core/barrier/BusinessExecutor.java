@@ -10,9 +10,9 @@ import com.github.imythu.core.tx.Transaction;
  * @author imythu
  */
 @FunctionalInterface
-public interface BarrierBusiFunc {
+public interface BusinessExecutor {
     /**
-     * type for busi func
+     * type for business func
      *
      * @param transaction for transactional operations
      * @throws BarrierException BarrierException
