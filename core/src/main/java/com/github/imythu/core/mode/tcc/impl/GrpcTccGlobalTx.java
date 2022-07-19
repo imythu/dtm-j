@@ -1,9 +1,9 @@
 package com.github.imythu.core.mode.tcc.impl;
 
 import com.github.imythu.core.constant.DtmConstant;
-import com.github.imythu.core.dtm.req.AbortRequest;
-import com.github.imythu.core.dtm.req.PrepareRequest;
-import com.github.imythu.core.dtm.req.SubmitRequest;
+import com.github.imythu.core.dtm.req.tcc.AbortRequest;
+import com.github.imythu.core.dtm.req.tcc.PrepareRequest;
+import com.github.imythu.core.dtm.req.tcc.SubmitRequest;
 import com.github.imythu.core.dtm.req.tcc.RegisterBranchRequest;
 import com.github.imythu.core.mode.tcc.impl.grpc.MultiAddressNameResolverProvider;
 import com.google.protobuf.ByteString;

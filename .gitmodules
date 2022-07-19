@@ -1,0 +1,6 @@
+[submodule "client"]
+	path = client
+	url = https://github.com/dtm-labs/client.git
+[submodule "dtm-examples"]
+	path = dtm-examples
+	url = https://github.com/dtm-labs/dtm-examples.git

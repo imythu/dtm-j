@@ -125,7 +125,7 @@ public class BranchBarrier {
             return rerr;
         }
         if (rerr == null) {
-            rerr = businessExecutor.doBusi(new Transaction(connection));
+            rerr = businessExecutor.execute(new Transaction(connection));
         }
         return rerr;
     }

@@ -11,9 +11,10 @@ public interface MsgGlobalTx {
      */
     void prepare() throws PrepareException;
 
-    void addStep();
+    void addStep(String url, String body);
 
-    void
+    boolean submit();
+    boolean doAndSubmitDB();
 
 
 }

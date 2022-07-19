@@ -17,5 +17,5 @@ public interface BusinessExecutor {
      * @param transaction for transactional operations
      * @throws BarrierException BarrierException
      */
-    Error doBusi(Transaction transaction) throws BarrierException;
+    Error execute(Transaction transaction) throws BarrierException;
 }

@@ -13,6 +13,10 @@ public class Transaction {
         this.connection = connection;
     }
 
+    public void begin() throws SQLException {
+        connection.setAutoCommit(false);
+    }
+
     public void rollback() throws SQLException {
         connection.rollback();
     }
