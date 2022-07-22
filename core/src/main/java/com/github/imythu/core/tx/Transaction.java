@@ -1,27 +1,24 @@
 package com.github.imythu.core.tx;
 
+import com.github.imythu.core.barrier.DefaultTransactionImpl;
+import com.github.imythu.core.utils.DbUtils;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
  * @author imythu
  */
-public class Transaction {
-    private final Connection connection;
+public interface Transaction {
 
-    public Transaction(Connection connection) {
-        this.connection = connection;
+    static Transaction getDefaultTransaction() {
+        return new DefaultTransactionImpl(DbUtils.getConnection());
     }
 
-    public void begin() throws SQLException {
-        connection.setAutoCommit(false);
-    }
+    void begin() throws SQLException;
 
-    public void rollback() throws SQLException {
-        connection.rollback();
-    }
+    void rollback() throws SQLException;
 
-    public void commit() throws SQLException {
-        connection.commit();
-    }
+    void commit() throws SQLException;
+
+    Connection getConnection();
 }

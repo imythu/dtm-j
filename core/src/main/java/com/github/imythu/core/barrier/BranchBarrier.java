@@ -1,5 +1,7 @@
 package com.github.imythu.core.barrier;
 
+import com.github.imythu.core.barrier.enums.BarrierErrorEnum;
+import com.github.imythu.core.barrier.exception.BarrierException;
 import com.github.imythu.core.compatible.golang.ReturnVal;
 import com.github.imythu.core.compatible.golang.error.Error;
 import com.github.imythu.core.constant.DtmConstant;
@@ -9,7 +11,6 @@ import com.github.imythu.core.tx.Transaction;
 import com.github.imythu.core.utils.DbUtils;
 import com.github.imythu.core.utils.ExceptionUtils;
 import com.google.common.base.Strings;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -37,7 +38,10 @@ public class BranchBarrier {
     private String op;
     private int barrierId;
 
-    public static BranchBarrier from(String transType, String gid, String branchId, String op) {
+    private Transaction transaction;
+
+    public static BranchBarrier from(
+            String transType, String gid, String branchId, String op, Transaction transaction) {
         if (Strings.isNullOrEmpty(transType)
                 || Strings.isNullOrEmpty(gid)
                 || Strings.isNullOrEmpty(branchId)
@@ -49,26 +53,31 @@ public class BranchBarrier {
         branchBarrier.gid = gid;
         branchBarrier.branchId = branchId;
         branchBarrier.op = op;
+        branchBarrier.transaction = transaction;
         return branchBarrier;
     }
 
-    /** the same as {@link #call(Connection, BusinessExecutor)} */
-    public Error callWithDb(Connection connection, BusinessExecutor businessExecutor) {
-        Error error = ExceptionUtils.execute(() -> connection.setAutoCommit(false));
-        if (error == null) {
-            error = call(connection, businessExecutor);
-        }
-        return error;
+    public static BranchBarrier from(String transType, String gid, String branchId, String op) {
+        return from(transType, gid, branchId, op, Transaction.getDefaultTransaction());
     }
 
     /**
      * see detail description in <a
      * href="https://en.dtm.pub/practice/barrier.html">https://en.dtm.pub/practice/barrier.html</a>
      *
-     * @param connection local transaction connection
-     * @param businessExecutor busi func
+     * @param businessExecutor businessExecutor
      */
-    public Error call(Connection connection, BusinessExecutor businessExecutor) {
+    public void call(BusinessExecutor businessExecutor) throws Exception {
+        transaction.begin();
+        try {
+            callInternal(businessExecutor);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+        }
+    }
+
+    private void callInternal(BusinessExecutor businessExecutor) throws BarrierException {
         barrierId++;
         String bid = String.format("%02d", barrierId);
         String originOp = opMap.get(op);
@@ -76,9 +85,9 @@ public class BranchBarrier {
         ReturnVal<Integer> originVal =
                 ExceptionUtils.execute(
                         () ->
-                                DbUtils.getDbSpecial(connection)
+                                DbUtils.getDbSpecial(transaction.getConnection())
                                         .executeInsertIgnoreSql(
-                                                connection,
+                                                transaction.getConnection(),
                                                 new BarrierDO()
                                                         .setTransType(transType)
                                                         .setGid(gid)
@@ -89,9 +98,9 @@ public class BranchBarrier {
         ReturnVal<Integer> currentVal =
                 ExceptionUtils.execute(
                         () ->
-                                DbUtils.getDbSpecial(connection)
+                                DbUtils.getDbSpecial(transaction.getConnection())
                                         .executeInsertIgnoreSql(
-                                                connection,
+                                                transaction.getConnection(),
                                                 new BarrierDO()
                                                         .setTransType(transType)
                                                         .setGid(gid)
@@ -109,7 +118,7 @@ public class BranchBarrier {
 
         // for msg's DoAndSubmit, repeated insert should be rejected.
         if (rerr == null && DtmConstant.MSG_DO_OP.equals(op) && currentAffected == 0) {
-            return ErrorConstant.ERR_DUPLICATED;
+            throw new BarrierException(BarrierErrorEnum.DUPLICATED);
         }
 
         if (rerr == null) {
@@ -117,17 +126,20 @@ public class BranchBarrier {
         }
         // null compensate
         boolean judgeOp =
-                DtmConstant.OP_CANCEL.equals(this.op) || DtmConstant.OP_COMPENSATE.equals(this.op) || DtmConstant.OP_ROLLBACK.equals(
-                        this.op);
+                DtmConstant.OP_CANCEL.equals(this.op)
+                        || DtmConstant.OP_COMPENSATE.equals(this.op)
+                        || DtmConstant.OP_ROLLBACK.equals(this.op);
         if (judgeOp && originAffected > 0) {
             // repeated request or dangled request
             currentAffected = 0;
-            return rerr;
+            throw new BarrierException(oerr.error());
         }
         if (rerr == null) {
-            rerr = businessExecutor.execute(new Transaction(connection));
+            rerr = businessExecutor.execute(transaction);
         }
-        return rerr;
+        if (rerr != null) {
+            throw new BarrierException(rerr.error());
+        }
     }
 
     @Override

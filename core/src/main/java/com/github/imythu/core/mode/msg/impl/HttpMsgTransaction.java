@@ -63,8 +63,8 @@ public class HttpMsgTransaction implements MsgTransaction<Msg> {
                 branchBarrier -> {
                     try {
                         DbUtils.getConnection().getMetaData().getDatabaseProductName();
-                        branchBarrier.callWithDb(DbUtils.getConnection(), businessExecutor);
-                    } catch (SQLException e) {
+                        branchBarrier.call(businessExecutor);
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 });
